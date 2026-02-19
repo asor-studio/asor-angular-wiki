@@ -22,12 +22,6 @@ L'applicazione utilizza esclusivamente il **Session Storage** del browser per me
 
 La documentazione potrebbe caricare risorse da CDN esterni (ad esempio font, icone). Queste risorse sono soggette alle privacy policy dei rispettivi fornitori.
 
-### Contatto
-
-Per domande relative alla privacy, è possibile contattarci tramite la sezione [Contatti](#info-contact) di questa pagina.
-
----
-
 ## <span id="info-terms">Termini di Servizio</span>
 
 ### Licenza
@@ -56,24 +50,13 @@ I contenuti di questa wiki sono forniti a scopo informativo e didattico. Sebbene
 
 ## <span id="info-contact">Contatti</span>
 
-### Repository GitHub
+### Autore
 
-Il modo principale per interagire con il progetto è attraverso la repository GitHub:
+Questa libreria è stata creata da **robrosc**.
 
-- 🐛 **Segnalazione bug**: Aprire una [Issue](https://github.com) nella repository del progetto
-- 💡 **Richieste di funzionalità**: Utilizzare le Issue con l'etichetta `enhancement`
-- 🔀 **Contributi**: Le Pull Request sono benvenute! Consultare le linee guida per i contributori nella repository
-
-### Contribuire
-
-Se desideri contribuire al progetto:
-
-1. Fai un **fork** della repository
-2. Crea un **branch** per la tua feature (`git checkout -b feature/mia-feature`)
-3. Effettua il **commit** delle modifiche (`git commit -m 'Aggiunta mia feature'`)
-4. Fai il **push** del branch (`git push origin feature/mia-feature`)
-5. Apri una **Pull Request**
+- **Organizzazione**: [ASOR Studio](https://github.com/asor-studio)
+- **Email**: asorstudio.contact@gmail.com
 
 ### Supporto
 
-Per domande generali sull'utilizzo della libreria, consulta prima la documentazione disponibile in questa wiki. Se non trovi la risposta, apri una Issue nella repository GitHub.
+Per domande generali sull'utilizzo della libreria, consulta prima la documentazione disponibile in questa wiki. Se non trovi la risposta, apri una Issue nella repository GitHub: https://github.com/asor-studio/asor-angular-wiki/issues

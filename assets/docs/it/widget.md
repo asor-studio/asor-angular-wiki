@@ -4,7 +4,7 @@ L'`AsorWidgetComponent` è un componente di debug e ispezione incluso nella libr
 
 Il widget è progettato per essere utilizzato durante lo sviluppo e il testing dell'applicazione, offrendo accesso immediato a console di log e stato dello storage senza lasciare il contesto della pagina corrente.
 
-![Pulsante floating del widget visibile nell'angolo inferiore destro](/assets/docs/images/widget-storage-page.png)
+![Pulsante floating del widget visibile nell'angolo inferiore destro](assets/docs/images/widget-storage-page.png)
 
 ## Panoramica <a id="widget-overview"></a>
 
@@ -120,7 +120,7 @@ Inserire il selettore `<asor-core-widget>` nel template HTML, idealmente come ul
 
 Il tab **Console** fornisce un flusso di log in tempo reale proveniente dal sistema `ConsoleLogsUtility` di `asor-core`. Permette di monitorare l'attività dell'applicazione senza aprire gli strumenti di sviluppo del browser.
 
-![Tab Console con flusso di log in tempo reale](/assets/docs/images/widget-console-tab.png)
+![Tab Console con flusso di log in tempo reale](assets/docs/images/widget-console-tab.png)
 
 ### Funzionalità
 
@@ -142,7 +142,7 @@ Il tab **Console** fornisce un flusso di log in tempo reale proveniente dal sist
 
 Il tab **Storage** offre una vista ispezionabile dello stato dello storage (`StateService`) dell'applicazione. Mostra i dati contenuti nei DataSet registrati e il registro dei componenti collegati.
 
-![Tab Storage con Data Containers e Component Registry](/assets/docs/images/widget-storage-tab.png)
+![Tab Storage con Data Containers e Component Registry](assets/docs/images/widget-storage-tab.png)
 
 ### Funzionalità
 

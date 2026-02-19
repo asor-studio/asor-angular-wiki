@@ -22,12 +22,6 @@ The application exclusively uses the browser's **Session Storage** to store the 
 
 The documentation may load resources from external CDNs (e.g., fonts, icons). These resources are subject to the privacy policies of their respective providers.
 
-### Contact
-
-For privacy-related questions, please contact us through the [Contact](#info-contact) section of this page.
-
----
-
 ## <span id="info-terms">Terms of Service</span>
 
 ### License
@@ -56,24 +50,13 @@ The contents of this wiki are provided for informational and educational purpose
 
 ## <span id="info-contact">Contact</span>
 
-### GitHub Repository
+### Author
 
-The primary way to interact with the project is through the GitHub repository:
+This library was created by **robrosc**.
 
-- 🐛 **Bug Reports**: Open an [Issue](https://github.com) in the project repository
-- 💡 **Feature Requests**: Use Issues with the `enhancement` label
-- 🔀 **Contributions**: Pull Requests are welcome! Check the contributor guidelines in the repository
-
-### Contributing
-
-If you'd like to contribute to the project:
-
-1. **Fork** the repository
-2. Create a **branch** for your feature (`git checkout -b feature/my-feature`)
-3. **Commit** your changes (`git commit -m 'Add my feature'`)
-4. **Push** the branch (`git push origin feature/my-feature`)
-5. Open a **Pull Request**
+- **Organization**: [ASOR Studio](https://github.com/asor-studio)
+- **Email**: asorstudio.contact@gmail.com
 
 ### Support
 
-For general questions about using the library, please check the documentation available in this wiki first. If you can't find the answer, open an Issue in the GitHub repository.
+For general questions about using the library, please check the documentation available in this wiki first. If you can't find the answer, open an Issue in the GitHub repository: https://github.com/asor-studio/asor-angular-wiki/issues
