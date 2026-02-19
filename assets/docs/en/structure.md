@@ -245,7 +245,7 @@ Import `TranslatePipe` into the standalone component and use the `| translate` p
 
 ```html
 <h1>{{ 'TITLE' | translate }}</h1>
-<p>{{ 'WELCOME' | translate : { name: 'Mario' } }}</p>
+<p>{{ 'WELCOME' | translate : params }}</p> <!-- params = { name: 'Mario' } -->
 ```
 
 #### 2. In TypeScript Code
