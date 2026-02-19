@@ -22,24 +22,6 @@ The ASOR Studio Wiki covers implementation details for:
 *   **Centralized Configuration**: Unified management of routes, cache, logs, and translations.
 *   **Powerful Utilities**: Ready-to-use tools for routing, object manipulation, and more.
 
-## Getting Started
-
-To run this Wiki locally and explore the documentation:
-
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
-
-2.  **Start the Application**:
-    ```bash
-    npm start
-    ```
-    This command runs `ng serve` and starts the development server.
-
-3.  **Open in Browser**:
-    Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
 ## Project Structure
 
 *   **Wiki/Docs**: This application is the living documentation for the library.
