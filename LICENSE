@@ -1,0 +1,18 @@
+Proprietary / All Rights Reserved
+Copyright (c) 2026 robrosc / asor-studio / asor-angular-wiki. All rights reserved.
+
+NOTICE:  All information contained herein is, and remains the property of robrosc / asor-studio / asor-angular-wiki.
+The intellectual and technical concepts contained herein are proprietary to robrosc / asor-studio / asor-angular-wiki and may be covered by patents, patents in process, and are protected by trade secret or copyright law.
+
+1. LICENSE GRANT
+Subject to the terms of this Agreement, you are granted a non-exclusive, non-transferable, revocable license to download and use the "asor-angular-lib" wiki (the "Software") solely for reference and documentation purposes.
+
+2. RESTRICTIONS
+You are strictly prohibited from:
+   a. Modifying, translating, adapting, or otherwise creating derivative works or improvements, whether or not patentable, of the Software or any part thereof.
+   b. Decompiling, disassembling, reverse engineering, or attempting to derive the source code, underlying ideas, algorithms, structure, or organization of the Software.
+   c. Redistributing, selling, leasing, licensing, renting, or re-publishing the Software, in whole or in part, including any modified versions or derivative works, on npm, GitHub Packages, or any other public or private registry or repository.
+   d. Removing, altering, or obscuring any copyright, trademark, patent, or other intellectual property or proprietary rights notices from the Software.
+
+3. NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
