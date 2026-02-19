@@ -1,0 +1,5 @@
+{
+    "CONFIGURATION.TITLE": "⚙️ Configuration",
+    "CONFIGURATION.DESC": "Extend the library's <code>ConfigConst</code> to customize routes, URLs, and behavior for your application.",
+    "CONFIGURATION.EXAMPLE.TITLE": "App Configuration Example"
+}
