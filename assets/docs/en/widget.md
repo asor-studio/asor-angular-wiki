@@ -4,7 +4,7 @@ The `AsorWidgetComponent` is a debug and inspection component included in the `a
 
 The widget is designed for use during application development and testing, providing immediate access to log console and storage state without leaving the current page context.
 
-![Widget floating button visible in the bottom-right corner](/assets/docs/images/widget-storage-page.png)
+![Widget floating button visible in the bottom-right corner](assets/docs/images/widget-storage-page.png)
 
 ## Overview <a id="widget-overview"></a>
 
@@ -120,7 +120,7 @@ Insert the `<asor-core-widget>` selector in the HTML template, ideally as the la
 
 The **Console** tab provides a real-time log stream from the `ConsoleLogsUtility` system of `asor-core`. It allows monitoring application activity without opening browser developer tools.
 
-![Console tab with real-time log stream](/assets/docs/images/widget-console-tab.png)
+![Console tab with real-time log stream](assets/docs/images/widget-console-tab.png)
 
 ### Features
 
@@ -142,7 +142,7 @@ The **Console** tab provides a real-time log stream from the `ConsoleLogsUtility
 
 The **Storage** tab provides an inspectable view of the application's storage state (`StateService`). It displays data contained in registered DataSets and the connected component registry.
 
-![Storage tab with Data Containers and Component Registry](/assets/docs/images/widget-storage-tab.png)
+![Storage tab with Data Containers and Component Registry](assets/docs/images/widget-storage-tab.png)
 
 ### Features
 
