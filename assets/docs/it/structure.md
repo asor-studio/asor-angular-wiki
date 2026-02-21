@@ -391,18 +391,24 @@ Il comportamento della cache è definito da regole (`IPath`) specificate nella c
 
 Le regole sono oggetti che rispettano l'interfaccia `IPath`. Ecco il significato di ogni proprietà:
 
+*   **`persistenceType`** (`AsorGlobalEnum.CacheType`): Il tipo di persistenza della cache.
+    *   `AsorGlobalEnum.CacheType.VOLATILE` (`'volatile'`): La cache è in memoria (RAM) e viene persa al refresh o alla chiusura del tab.
+    *   `AsorGlobalEnum.CacheType.SESSION` (`'session'`): La cache sopravvive al reload della pagina (salvata nel `sessionStorage` del browser).
+    *   `AsorGlobalEnum.CacheType.LOCAL` (`'local'`): La cache viene salvata nel `localStorage` e persiste tra le sessioni.
+*   **`encriptType`** (`AsorGlobalEnum.CacheEncriptType`): Il tipo di crittografia da utilizzare.
+    *   `AsorGlobalEnum.CacheEncriptType.NONE` (`'NONE'`): Nessuna crittografia.
+    *   `AsorGlobalEnum.CacheEncriptType.AUTO` (`'AUTO'`): Crittografia rilevata automaticamente.
+    *   `AsorGlobalEnum.CacheEncriptType.CUSTOM` (`'CUSTOM'`): Tipo di crittografia personalizzato.
 *   **`pathValue`** (`string`): L'URL (o parte di esso) della richiesta HTTP da intercettare. Se la richiesta contiene questa stringa, la regola viene applicata.
 *   **`resctrictRoute`** (`string`): Limita la regola a una specifica rotta dell'applicazione.
     *   `ConfigConst.Route.NONE` o `''`: La regola vale per tutte le rotte.
     *   Specificando una rotta (es. `/dashboard`), la cache si attiva solo se l'utente si trova in quella pagina.
-*   **`isPersistent`** (`boolean`):
-    *   `true`: La cache sopravvive al reload della pagina (salvata nel `sessionStorage` del browser).
-    *   `false`: La cache è in memoria (RAM) e viene persa al refresh o alla chiusura del tab.
 *   **`reqPayloadCache`** (`boolean`):
     *   `true`: Include il body della richiesta (payload) nella chiave di cache. Utile per le `POST` di ricerca dove lo stesso endpoint restituisce dati diversi in base ai filtri.
     *   `false`: Ignora il payload. La chiave di cache è basata solo sull'URL.
 *   **`clearOn`** (`string[]`): Elenco di endpoint che, se chiamati (solitamente con metodi non-GET come `POST`, `PUT`, `DELETE`), invalidano questa cache.
     *   Esempio: Una chiamata a `/api/users/update` può essere configurata per pulire la cache di `/api/users/list`.
+*   **`callBackCacheKey`** (opzionale `() => string`): Una funzione di callback per generare una chiave di cache personalizzata per la richiesta.
 
 ### Abilitazione e Personalizzazione
 
@@ -414,12 +420,13 @@ Creare una classe di configurazione (es. `WikiCacheConfig`) che estende `ConfigC
 
 ```typescript
 // src/app/config/wiki.cache.config.ts
-import { ConfigCache, IPath, ConfigConst } from '@asor-studio/asor-core';
+import { ConfigCache, IPath, ConfigConst, AsorGlobalEnum } from '@asor-studio/asor-core';
 
 export class WikiCacheConfig extends ConfigCache {
     protected static override _pathsExtensions: IPath[] = [
         {
-            isPersistent: true,
+            persistenceType: AsorGlobalEnum.CacheType.SESSION,
+            encriptType: AsorGlobalEnum.CacheEncriptType.AUTO,
             reqPayloadCache: false,
             resctrictRoute: ConfigConst.Route.NONE,
             pathValue: '/api/v1/users', // Cacha le chiamate utenti
