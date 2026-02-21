@@ -167,6 +167,9 @@ export interface StateHandlerConfig {
     encryptionType?: EncryptType;   // Encryption algorithm type (e.g., AES)
     nameType?: GenerateType;        // Name generation strategy (AUTO or CUSTOM)
     keyType?: GenerateType;         // Key generation strategy (AUTO or CUSTOM)
+    asyncEnabled?: boolean;         // Enable async storage (default: false) 
+                                    // (define fisical storage command by job or when on change props)
+                                    
     callBackStateName?: () => string; // Callback for custom name (if nameType is CUSTOM)
     callBackStateKey?: () => string;  // Callback for custom key (if keyType is CUSTOM)
 }

@@ -387,18 +387,24 @@ Cache behavior is defined by rules (`IPath`) specified in the `ConfigCache` clas
 
 Rules are objects respecting the `IPath` interface. Here is the meaning of each property:
 
+*   **`persistenceType`** (`AsorGlobalEnum.CacheType`): The type of cache persistence.
+    *   `AsorGlobalEnum.CacheType.VOLATILE` (`'volatile'`): The cache is in-memory (RAM) and is lost upon refresh or tab closure.
+    *   `AsorGlobalEnum.CacheType.SESSION` (`'session'`): The cache survives page reload (saved in browser `sessionStorage`).
+    *   `AsorGlobalEnum.CacheType.LOCAL` (`'local'`): The cache is stored in `localStorage` across page refreshes.
+*   **`encriptType`** (`AsorGlobalEnum.CacheEncriptType`): The type of encryption to use.
+    *   `AsorGlobalEnum.CacheEncriptType.NONE` (`'NONE'`): No encryption.
+    *   `AsorGlobalEnum.CacheEncriptType.AUTO` (`'AUTO'`): Auto-detect encryption based on cache type.
+    *   `AsorGlobalEnum.CacheEncriptType.CUSTOM` (`'CUSTOM'`): Custom encryption type.
 *   **`pathValue`** (`string`): The URL (or part of it) of the HTTP request to intercept. If the request contains this string, the rule applies.
 *   **`resctrictRoute`** (`string`): Limits the rule to a specific application route.
     *   `ConfigConst.Route.NONE` or `''`: The rule applies to all routes.
     *   Specifying a route (e.g., `/dashboard`), the cache activates only if the user is on that page.
-*   **`isPersistent`** (`boolean`):
-    *   `true`: The cache survives page reload (saved in browser `sessionStorage`).
-    *   `false`: The cache is in-memory (RAM) and is lost upon refresh or tab closure.
 *   **`reqPayloadCache`** (`boolean`):
     *   `true`: Include request body (payload) in cache key. Useful for `POST` search requests where the same endpoint returns different data based on filters.
     *   `false`: Ignore payload. Cache key is based only on URL.
 *   **`clearOn`** (`string[]`): List of endpoints that, if called (usually with non-GET methods like `POST`, `PUT`, `DELETE`), invalidate this cache.
     *   Example: A call to `/api/users/update` can be configured to clear the cache of `/api/users/list`.
+*   **`callBackCacheKey`** (optional `() => string`): A callback function to generate a custom cache key for the request.
 
 ### Enabling and Customization
 
@@ -410,12 +416,13 @@ Create a configuration class (e.g., `WikiCacheConfig`) extending `ConfigCache` f
 
 ```typescript
 // src/app/config/wiki.cache.config.ts
-import { ConfigCache, IPath, ConfigConst } from '@asor-studio/asor-core';
+import { ConfigCache, IPath, ConfigConst, AsorGlobalEnum } from '@asor-studio/asor-core';
 
 export class WikiCacheConfig extends ConfigCache {
     protected static override _pathsExtensions: IPath[] = [
         {
-            isPersistent: true,
+            persistenceType: AsorGlobalEnum.CacheType.SESSION,
+            encriptType: AsorGlobalEnum.CacheEncriptType.AUTO,
             reqPayloadCache: false,
             resctrictRoute: ConfigConst.Route.NONE,
             pathValue: '/api/v1/users', // Caches user calls

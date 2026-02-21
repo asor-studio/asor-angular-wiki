@@ -464,7 +464,7 @@ import { ConsoleLogsUtility } from '@asor-studio/asor-core';
 
 export class MyService {
     // IMPORTANTE: Definire className per garantire il funzionamento dei log in produzione (build minificata)
-    public static readonly className = 'MyService';
+    public static readonly className: string = 'MyService';
 
     doSomething() {
         // Log Info
