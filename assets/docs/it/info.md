@@ -1,62 +1,61 @@
-# Informazioni
+# ℹ️ Informazioni
 
 ---
 
-## <span id="info-privacy">Privacy Policy</span>
+## <span id="info-privacy">🛡️ Privacy Policy</span>
 
-La presente informativa sulla privacy descrive le modalità con cui **ASOR Studio (Application Stability & Organizational Research)** gestisce le informazioni relative agli utenti che consultano questa documentazione.
+Questa informativa descrive le modalità con cui **ASOR Studio (Application Stability & Organizational Research)** gestisce i dati relativi agli utenti che consultano la presente documentazione.
 
 ### Dati raccolti
 
-Questa documentazione wiki è un'applicazione statica lato client. **Non vengono raccolti dati personali**, non vengono utilizzati cookie di tracciamento e non vengono effettuate richieste a server esterni per la raccolta di dati.
+Questa documentazione wiki è un'applicazione statica lato client. 
+> **Non vengono raccolti dati personali**, non vengono utilizzati cookie di tracciamento e non vengono effettuate richieste a server esterni atte alla raccolta di informazioni.
 
 ### Dati locali
 
-L'applicazione utilizza esclusivamente il **Session Storage** del browser per memorizzare la preferenza linguistica dell'utente (italiano/inglese). Questo dato:
-
-- Rimane esclusivamente nel browser dell'utente
-- Non viene trasmesso a nessun server
-- Viene eliminato automaticamente alla chiusura della sessione del browser
+Per migliorare la tua esperienza utente, l'applicazione sfrutta esclusivamente il **Session Storage** del browser per memorizzare le tue preferenze (ad esempio, la lingua selezionata). 
+Questo dato:
+- 🔒 **Rimane in locale**: risiede in modo esclusivo nel tuo browser.
+- 🚫 **Mai trasmesso**: non viene mai inviato ad alcun server.
+- 🧹 **Effimero**: viene eliminato in automatico non appena chiudi la sessione di navigazione.
 
 ### Librerie di terze parti
 
-La documentazione potrebbe caricare risorse da CDN esterni (ad esempio font, icone). Queste risorse sono soggette alle privacy policy dei rispettivi fornitori.
-
-## <span id="info-terms">Termini di Servizio</span>
-
-### Licenza
-
-**ASOR Studio (Application Stability & Organizational Research)** distribuisce il software e la documentazione sotto termini proprietari.
-
-#### asor-core
-La libreria `asor-core` è concessa in licenza esclusivamente per l'uso come dipendenza nei progetti software. È vietato:
-- Modificare, decompilare o effettuare reverse engineering del software.
-- Ridistribuire o rivendere la libreria.
-
-#### asor-angular-wiki
-Questa documentazione wiki è concessa in licenza esclusivamente per scopi di riferimento e documentazione. È vietato:
-- Modificare o creare opere derivate.
-- Copiare o ridistribuire i contenuti.
-
-### Condizioni (NO WARRANTY)
-
-IL SOFTWARE È FORNITO "COSÌ COM'È", SENZA ALCUN TIPO DI GARANZIA, ESPLICITA O IMPLICITA, INCLUSE MA NON LIMITATE ALLE GARANZIE DI COMMERCIABILITÀ, IDONEITÀ PER UNO SCOPO PARTICOLARE E NON VIOLAZIONE. IN NESSUN CASO GLI AUTORI O I TITOLARI DEL COPYRIGHT SARANNO RESPONSABILI PER QUALSIASI RECLAMO, DANNO O ALTRA RESPONSABILITÀ, SIA IN UN'AZIONE DI CONTRATTO, ILLECITO O ALTRO, DERIVANTE DA, O IN RELAZIONE AL SOFTWARE O ALL'USO O ALTRE TRANSAZIONI NEL SOFTWARE.
-
-### Documentazione
-
-I contenuti di questa wiki sono forniti a scopo informativo e didattico. Sebbene ci impegniamo a mantenere la documentazione aggiornata e accurata, non garantiamo la completezza o l'assenza di errori.
+Per un'interfaccia ottimale, la documentazione potrebbe caricare risorse visive (come font e icone) da CDN esterni, le quali restano soggette alle *privacy policy* dei rispettivi fornitori.
 
 ---
 
-## <span id="info-contact">Contatti</span>
+## <span id="info-terms">📜 Termini di Servizio e Licenza</span>
 
-### Autore
+**ASOR Studio** distribuisce il software e la relativa documentazione secondo specifici termini proprietari.
 
-Questa libreria è stata creata da **robrosc**.
+### Licenze dei pacchetti
 
-- **Organizzazione**: [ASOR Studio](https://github.com/asor-studio)
-- **Email**: asorstudio.contact@gmail.com
+- 📦 **[`--> asor-core <--`](https://www.npmjs.com/package/@asor-studio/asor-core?activeTab=code)**:
+  La licenza e le condizioni di utilizzo della libreria core sono disponibili direttamente all'interno della pagina ufficiale del pacchetto NPM.
 
-### Supporto
+- 📖 **[`--> asor-angular-wiki <--`](https://github.com/asor-studio/asor-angular-wiki/blob/main/LICENSE)**:
+  La licenza e le condizioni di utilizzo della libreria core sono disponibili direttamente all'interno della pagina ufficiale del pacchetto NPM.
 
-Per domande generali sull'utilizzo della libreria, consulta prima la documentazione disponibile in questa wiki. Se non trovi la risposta, apri una Issue nella repository GitHub: https://github.com/asor-studio/asor-angular-wiki/issues
+### Condizioni e Limitazioni (NO WARRANTY)
+
+> **IL SOFTWARE È FORNITO "COSÌ COM'È"**, SENZA ALCUN TIPO DI GARANZIA, ESPLICITA O IMPLICITA, INCLUSE – MA NON LIMITATE A –  LE GARANZIE DI COMMERCIABILITÀ, ADEGUATEZZA PER UNO SCOPO SPECIFICO E NON VIOLAZIONE.  
+> *IN NESSUN CASO GLI AUTORI O I TITOLARI DEL COPYRIGHT POTRANNO ESSERE RITENUTI RESPONSABILI PER RECLAMI, DANNI O QUALUNQUE ALTRA RESPONSABILITÀ (SIA IN AZIONI CONTRATTUALI, ILLECITO O ALTRO) DERIVANTI DAL SOFTWARE, DAL SUO UTILIZZO O DA ALTRE INTERAZIONI CON ESSO.*
+
+### Affidabilità della Documentazione
+
+I materiali in questa wiki hanno finalità puramente informative e didattiche. Benché il nostro impegno sia costantemente volto a mantenere questi documenti accurati e aggiornati, non possiamo garantire la totale completezza né l'assoluta assenza di inesattezze.
+
+---
+
+## <span id="info-contact">📧 Contatti e Supporto</span>
+
+La libreria è stata ideata e sviluppata da **robrosc**.
+
+- 🏢 **Organizzazione**: [--> ASOR Studio <--](https://github.com/asor-studio)
+- ✉️ **Email**: [--> asorstudio.contact@gmail.com <--](mailto:asorstudio.contact@gmail.com)
+
+### Hai bisogno di assistenza?
+
+Per dubbi generali o necessità legate all'utilizzo della libreria, ti consigliamo di esplorare a fondo le guide presenti in questa wiki. 
+Qualora non dovessi trovare la risposta al tuo quesito, puoi sempre aprire una **[--> Issue sulla nostra repository GitHub <--](https://github.com/asor-studio/asor-angular-wiki/issues)**. Saremo ben felici di aiutarti!

@@ -176,8 +176,11 @@ export interface StateHandlerConfig {
 
 // Example with custom configuration
 inject(StateService).initialize({
+    globalStateName: 'wiki', // Fundamental for isolating the storage system within the single Angular microservice. Alternatively, maintaining the same name across multiple microservices makes it possible to share storage between them.
     encryptionType: AsorStorage.StateConst.EncryptType.AES,
-    keyType: AsorStorage.StateConst.Generate.AUTO
+    nameType: AsorStorage.StateConst.Generate.AUTO,
+    keyType: AsorStorage.StateConst.Generate.AUTO,
+    asyncEnabled: true, // Defines whether the data saving system should be governed by a job system or by the event system (state change)
 });
 ```
 

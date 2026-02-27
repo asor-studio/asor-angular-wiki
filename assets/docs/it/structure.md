@@ -14,6 +14,7 @@ La root dell'applicazione è suddivisa nelle seguenti macro-aree:
 *   📂 **`pages/`**: Contiene le pagine dell'applicazione (viste intere raggiungibili via routing).
 *   📂 **`components/`**: Contiene i componenti "smart" o organismi complessi riutilizzabili.
 *   📂 **`molecules/`**: Contiene le molecole, ovvero componenti UI riutilizzabili e funzionali.
+*   📂 **`atoms/`**: Contiene gli atomi, ovvero componenti UI riutilizzabili e base.
 *   📂 **`config/`**: Contiene i file di configurazione globali (rotte, costanti, cache).
 
 ```text
@@ -423,6 +424,10 @@ Creare una classe di configurazione (es. `WikiCacheConfig`) che estende `ConfigC
 import { ConfigCache, IPath, ConfigConst, AsorGlobalEnum } from '@asor-studio/asor-core';
 
 export class WikiCacheConfig extends ConfigCache {
+
+    // È obbligatorio per inizializzare le costanti della libreria asor-core
+    public static override globalStateName = 'wiki'; // Fondamentale per isolare il sistema di cache nel singolo microservizio Angular. In alternativa, mantenendo lo stesso nome in più microservizi, è possibile condividere la cache tra di essi.
+
     protected static override _pathsExtensions: IPath[] = [
         {
             persistenceType: AsorGlobalEnum.CacheType.SESSION,
@@ -518,7 +523,7 @@ export class MyComponent extends BaseComponent {
     override baseCompViewEnter() {
         // Registrazione alla ricezione degli errori
         this.notifyErrorService.registry(
-            this.constructor.name, // ID Univoco (Nome Classe)
+            this.constructor.className, // ID Univoco (Nome Classe)
             (status: HttpStatusCode, error: IHttpResponseError) => {
                 this.handleError(status, error);
             }
