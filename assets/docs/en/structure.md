@@ -419,6 +419,9 @@ Create a configuration class (e.g., `WikiCacheConfig`) extending `ConfigCache` f
 import { ConfigCache, IPath, ConfigConst, AsorGlobalEnum } from '@asor-studio/asor-core';
 
 export class WikiCacheConfig extends ConfigCache {
+    // Mandatory to initialize asor-core library constants
+    public static override globalStateName = 'wiki'; // Fundamental for isolating the cache system within the single Angular microservice. Alternatively, maintaining the same name across multiple microservices makes it possible to share the cache between them.
+
     protected static override _pathsExtensions: IPath[] = [
         {
             persistenceType: AsorGlobalEnum.CacheType.SESSION,
@@ -514,7 +517,7 @@ export class MyComponent extends BaseComponent {
     override baseCompViewEnter() {
         // Registering for error reception
         this.notifyErrorService.registry(
-            this.constructor.name, // Unique ID (Class Name)
+            this.constructor.className, // Unique ID (Class Name)
             (status: HttpStatusCode, error: IHttpResponseError) => {
                 this.handleError(status, error);
             }

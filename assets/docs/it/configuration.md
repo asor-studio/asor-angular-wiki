@@ -95,7 +95,7 @@ export class AppComponent {
     constructor() {
         // 1. Configurazione Livelli di Log
         // Abilita i log per servizi specifici (es. StateService, MyComponent)
-        ConsoleLogsConfig.setClassLevels(StateService.name || '', ['ERROR', 'WARNING']);
+        ConsoleLogsConfig.setClassLevels(StateService.className || '', ['ERROR', 'WARNING']);
         // ConsoleLogsConfig.setClassLevels('MyComponent', ['INFO', 'DEBUG', 'ERROR']);
 
         // 2. Inizializzazione State Service
