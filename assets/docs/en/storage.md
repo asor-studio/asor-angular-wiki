@@ -190,3 +190,51 @@ The `nameType` and `keyType` properties determine how names and keys for storage
 
 - **AUTO**: The system automatically generates the value. It is the recommended option for most standard cases.
 - **CUSTOM**: Delegates value generation to a custom callback function (`callBackStateName` or `callBackStateKey`). This option is useful when specific control over naming or cryptographic key generation is needed, for example, to integrate with existing systems or specific security policies.
+
+---
+
+## 6. Storage-Aware Molecule Example <a id="storage-mol-intro"></a>
+
+If you want to see storage working in a concrete UI block, the clearest example is a molecule that reads and writes directly through `props`.
+
+| Part | Why it matters |
+|---|---|
+| HTML | Shows direct binding to `props` |
+| TypeScript | Shows how little boilerplate is needed |
+| Inheritance | Explains why `BaseStorageMolecule<T>` does most of the heavy lifting |
+
+### Molecule HTML <a id="storage-mol-html"></a>
+
+For the full markup and the concrete example, see the dedicated storage molecule example page.
+
+### Molecule TypeScript <a id="storage-mol-ts"></a>
+
+For the full logic and concrete implementation, see the dedicated storage molecule example page.
+
+### Molecule Inheritance <a id="storage-mol-inheritance"></a>
+
+The key idea is that `BaseStorageMolecule<T>` exposes typed, reactive `props`, so the molecule can focus on UI behavior instead of manual synchronization logic.
+
+---
+
+## 7. Storage-Aware Component Example <a id="storage-comp-intro"></a>
+
+A storage-aware component becomes useful when you want to present, derive, or orchestrate state at a higher level than a molecule.
+
+| Part | Why it matters |
+|---|---|
+| HTML | Shows how state-backed values are rendered |
+| TypeScript | Shows derived getters and presentation logic |
+| Inheritance | Explains the role of `BaseStorageComponent<T>` |
+
+### Component HTML <a id="storage-comp-html"></a>
+
+For the full template and concrete example, see the dedicated storage component example page.
+
+### Component TypeScript <a id="storage-comp-ts"></a>
+
+For the full logic and concrete implementation, see the dedicated storage component example page.
+
+### Component Inheritance <a id="storage-comp-inheritance"></a>
+
+The value of `BaseStorageComponent<T>` is that it connects route metadata, datasets, and page lifecycle while leaving the component focused on orchestration and presentation.

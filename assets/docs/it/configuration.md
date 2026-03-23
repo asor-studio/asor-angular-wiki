@@ -2,6 +2,8 @@
 
 Questa guida segue il bootstrap reale prodotto da `asor setup`, quindi i passaggi qui sotto corrispondono ai file e alle cartelle che la CLI genera davvero dentro un workspace Angular.
 
+L'obiettivo non e` solo "far partire il progetto", ma capire come ASOR organizza il bootstrap di una applicazione moderna: configurazione centralizzata, stato, cache, i18n, widget e interceptor lavorano insieme fin dal primo avvio.
+
 ---
 
 ## 1. Installa la CLI <a id="config-installation"></a>
@@ -61,6 +63,8 @@ Quando il comando termina, esegue queste operazioni:
 7. Importa `AsorWidgetComponent` nel componente standalone root quando serve
 8. Salva i valori scelti in `asor-core.json`
 
+Il punto importante e` che il setup non genera file casuali: costruisce una piccola architettura iniziale gia` coerente con il runtime di `asor-core`.
+
 La struttura generata include:
 
 - `src/app/app.config.ts`
@@ -72,6 +76,8 @@ La struttura generata include:
 - `src/app/config/interfaces/<prefix>-state.interfaces.ts`
 - `src/app/pages/page-home/*`
 - `src/app/molecules/molecule-sample-widget/*`
+
+Tra questi file, `src/app/config/<prefix>-cache.config.ts` merita una nota speciale: non e` un dettaglio secondario, ma il punto da cui si governa una parte importante dell'ottimizzazione HTTP dell'applicazione.
 
 ---
 
@@ -102,7 +108,58 @@ Inoltre il file generato `<prefix>.config.ts` viene gia aggiornato in modo che:
 
 ---
 
-## 5. Setup manuale senza `asor setup` <a id="config-manual"></a>
+## 5. Punto di attenzione: `asor-cli`, README e comandi <a id="config-cli-reference"></a>
+
+Quando lavori con `asor-core`, e` utile ricordare che una parte importante dell'ecosistema vive dentro `asor-cli`.
+
+Per questo il file:
+
+`projects/asor-cli/README.md`
+
+non va visto come semplice documentazione accessoria. E` il riferimento pratico per capire:
+
+- quali comandi esistono davvero
+- quali flag supportano
+- quali file vengono generati
+- quando un comando modifica route, i18n, log o bootstrap
+
+In pratica, se `asor-core` ti spiega come funziona il runtime, il README della CLI ti spiega come costruire correttamente i pezzi che quel runtime si aspetta.
+
+### Comandi principali della CLI
+
+| Comando | Quando usarlo | Effetto principale |
+|---|---|---|
+| `asor setup` | All'inizio del progetto | Configura Angular per l'ecosistema ASOR |
+| `asor help` | Quando vuoi vedere sintassi e flag | Mostra l'help corrente della CLI |
+| `asor -g -page <name>` | Quando ti serve una nuova pagina | Genera una route page |
+| `asor -g -molecule <name>` | Quando ti serve un blocco UI funzionale medio | Genera una molecule |
+| `asor -g -atom <name>` | Quando ti serve un elemento UI minimo | Genera un atom |
+| `asor -g -organism <name>` | Quando ti serve una sezione UI ampia e riusabile | Genera un organism |
+| `asor -g -service <name>` | Quando ti serve logica applicativa riusabile | Genera un service |
+| `asor -g -mock-service <name>` | Quando vuoi simulare endpoint backend | Genera un mock controller service |
+| `asor -g -state <name>` | Quando devi introdurre dataset e connessioni di stato | Genera state config e interface |
+
+### Flag piu` usati
+
+| Flag | Significato |
+|---|---|
+| `-full` | Abilita injection di route, i18n e configurazione dove previsto |
+| `-storage` | Genera la variante storage-aware (`BaseStorage*`) |
+| `-in <page>` | Inietta molecule, atom o organism dentro una pagina specifica |
+
+### Regola pratica
+
+Prima di usare un comando "a memoria", conviene sempre confrontarlo con il README della CLI o con `asor help`, soprattutto quando il comando deve:
+
+- aggiornare `app.routes.ts`
+- aggiungere namespace i18n
+- registrare log
+- registrare mock controller
+- aggiornare state config
+
+---
+
+## 6. Setup manuale senza `asor setup` <a id="config-manual"></a>
 
 Se preferisci configurare il progetto a mano, puoi costruire un progetto ASOR minimo e funzionante replicando i blocchi principali che la CLI genera automaticamente.
 
@@ -232,6 +289,13 @@ export class AppCacheConfig extends ConfigCache {
   }
 }
 ```
+
+Questa cache config minima non e` solo un esempio tecnico. E` la base da cui partire per:
+
+- ridurre richieste ripetute
+- riusare gli asset i18n
+- controllare il ciclo di vita della cache
+- evitare soluzioni improvvisate dentro i service
 
 ### Step 5. Inizializza ASOR in `app.config.ts`
 
@@ -402,7 +466,7 @@ Con questi file il progetto ha gli stessi pezzi minimi usati da `asor setup`: re
 
 ---
 
-## 6. File da rivedere per primi <a id="config-review"></a>
+## 7. File da rivedere per primi <a id="config-review"></a>
 
 Dopo il setup, questi sono i file principali da toccare.
 
@@ -437,6 +501,8 @@ Questo file contiene il bootstrap eseguito da `APP_INITIALIZER`. Di default:
 - inizializza `StateService`
 - crea il dataset globale di default definito in `<prefix>-state.config.ts`
 
+Se il progetto usa mock controller, questo e` anche il punto naturale in cui registrarli tramite `MockOrchestratorService`.
+
 ### `src/app/app.routes.ts`
 
 Il file delle route generato include gia:
@@ -446,9 +512,11 @@ Il file delle route generato include gia:
 - il `data` della route con i18n, connessione dataset e slot componenti
 - il sample widget registrato dentro `Molecules`
 
+Da qui in poi il routing diventa il luogo in cui la pagina dichiara il proprio perimetro runtime: traduzioni, stato e blocchi UI registrati.
+
 ---
 
-## 7. Prime modifiche consigliate dopo il setup <a id="config-next-steps"></a>
+## 8. Prime modifiche consigliate dopo il setup <a id="config-next-steps"></a>
 
 Questi sono di solito i primi interventi richiesti in un progetto reale:
 
@@ -460,7 +528,7 @@ Questi sono di solito i primi interventi richiesti in un progetto reale:
 
 ---
 
-## 8. Continua con i generatori <a id="config-generators"></a>
+## 9. Continua con i generatori <a id="config-generators"></a>
 
 Una volta completato il setup, puoi generare altri building block:
 

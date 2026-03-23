@@ -1,33 +1,45 @@
 # Gestione dello Storage (DataSet)
 
-In questa sezione viene spiegato come configurare, applicare e inizializzare lo storage (DataSet) all'interno dell'applicazione utilizzando `ICreateDataSet` e `IConnectDataSet`.
+Lo storage in `asor-core` non e` un semplice contenitore di dati. E` il meccanismo che permette a una pagina, una molecola, un organismo o un atom storage-aware di leggere e aggiornare uno stato condiviso senza dover riscrivere continuamente la stessa logica di sincronizzazione.
 
-## 1. Definizione della Configurazione (`ICreateDataSet`) <a id="storage-definition"></a>
+Questa pagina prova a leggerlo in modo pratico: prima capiamo i concetti, poi vediamo come si collegano tra loro.
 
-Per definire un nuovo storage (DataSet), è necessario creare un oggetto che rispetti l'interfaccia `ICreateDataSet`. Questo oggetto definisce il nome del contenitore, i dati iniziali e le opzioni di configurazione.
+---
 
-### Esempio (`example.storage.const.ts`)
+## 1. Definizione del DataSet (`ICreateDataSet`) <a id="storage-definition"></a>
+
+Un dataset descrive tre cose:
+
+- come si chiama il contenitore
+- quali dati iniziali contiene
+- come deve essere conservato
+
+In ASOR il dataset e` dichiarativo: non si costruisce "a mano" in giro per l'app, ma si definisce una volta e poi lo si registra nel punto corretto.
+
+### Struttura essenziale
+
+| Campo | Significato |
+|---|---|
+| `name` | Nome logico del contenitore |
+| `data` | Oggetto iniziale del dataset |
+| `option` | Regole di persistenza e protezione |
+
+### Esempio
 
 ```typescript
 import { AsorStorage, ICreateDataSet } from '@asor-studio/asor-core';
 
 export const ExampleCreateDataSet: ICreateDataSet = {
-    name: 'example-component', // Nome del contenitore
+    name: 'example-component',
     data: {
         title: 'Hi {name}, you have {age} years.',
         form: {
             name: 'John',
             age: 30,
             jobRole: [
-                {
-                    title: 'Developer',
-                    description: 'Developer',
-                    selected: false
-                }, {
-                    title: 'Designer',
-                    description: 'Designer',
-                    selected: false
-                }]
+                { title: 'Developer', description: 'Developer', selected: false },
+                { title: 'Designer', description: 'Designer', selected: false }
+            ]
         }
     } as IExampleProps,
     option: {
@@ -38,72 +50,83 @@ export const ExampleCreateDataSet: ICreateDataSet = {
 };
 ```
 
-### Dettagli Opzioni di Configurazione <a id="storage-config-details"></a>
+### Dettagli delle opzioni di configurazione <a id="storage-config-details"></a>
 
-La proprietà `option` nell'oggetto `ICreateDataSet` permette di configurare il comportamento dello storage per questo specifico dataset.
+| Opzione | Significato pratico |
+|---|---|
+| `storeType` | Decide dove e per quanto tempo vivono i dati |
+| `encrypt` | Protegge il contenuto prima della persistenza |
+| `freeze` | Rende immutabile il valore iniziale |
 
-#### Tipologie di Storage (`storeType`)
-Esistono 3 tipologie di storage disponibili:
-1. **VOLATILE**: I dati vengono mantenuti solo in memoria. Vengono persi al refresh della pagina. È l'opzione di default e la più performante.
-2. **SESSION**: I dati vengono salvati nel `SessionStorage` del browser. Sopravvivono al refresh della pagina ma vengono persi alla chiusura del tab o del browser.
-3. **LOCAL**: I dati vengono salvati nel `LocalStorage` del browser. Persistono anche dopo la chiusura e riapertura del browser.
+### Tipi di storage
 
-#### Criptazione (`encrypt`)
-Impostando `encrypt: true`, il contenuto del dataset viene criptato prima di essere salvato nello storage (utile per Session e Local storage) per garantire una maggiore sicurezza dei dati sensibili.
-
-#### Immutabilità (`freeze`)
-Impostando `freeze: true`, il contenuto iniziale del dataset viene reso immutabile ("congelato") al momento della creazione. Questo è utile per prevenire modifiche accidentali ai dati di configurazione o costanti, assicurando che lo stato rimanga consistente.
+| Tipo | Quando usarlo |
+|---|---|
+| `VOLATILE` | Quando i dati possono essere persi al refresh e vuoi la soluzione piu` leggera |
+| `SESSION` | Quando i dati devono sopravvivere al reload ma non oltre la sessione del browser |
+| `LOCAL` | Quando i dati devono restare disponibili anche dopo chiusura e riapertura |
 
 ---
 
 ## 2. Connessione del DataSet (`IConnectDataSet`) <a id="storage-connection"></a>
 
-Per collegare il contenitore a un componente o a una molecola ed erogare i dati nelle loro proprietà (`props`), si utilizza un oggetto `IConnectDataSet`.
+Definire un dataset non basta. Bisogna anche dire come i suoi valori vengono esposti dentro i blocchi UI.
 
-Questo oggetto definisce i selettori che mappano le proprietà dello storage alle proprietà del componente. Quando i dati nello storage cambiano, le proprietà collegate vengono aggiornate automaticamente.
+Questo compito spetta a `IConnectDataSet`, che crea una mappa tra i path dello storage e le proprieta` che il componente vedra` dentro `props`.
 
-### Esempio (`example.storage.const.ts`)
+### Struttura
+
+| Campo | Ruolo |
+|---|---|
+| `name` | Nome logico della connessione |
+| `selectors` | Mappa tra path del dataset e props del blocco |
+
+### Esempio
 
 ```typescript
 import { IConnectDataSet } from '@asor-studio/asor-core';
 
 export const ExampleConnectDataSet: IConnectDataSet = {
+    name: 'ExampleConnection',
     selectors: {
-        title: 'example-component.title', // Mappa 'title' del componente a 'example-component.title' dello storage
-        form: 'example-component.form'    // Mappa 'form' del componente a 'example-component.form' dello storage
+        title: 'example-component.title',
+        form: 'example-component.form'
     }
 };
 ```
 
+### Come leggerlo
+
+| Selector | Significa |
+|---|---|
+| `title: 'example-component.title'` | `props.title` leggerebbe `example-component.title` |
+| `form: 'example-component.form'` | `props.form` leggerebbe `example-component.form` |
+
 ---
 
-## 3. Applicazione della Configurazione alle Rotte <a id="storage-application"></a>
+## 3. Come si collega alla route <a id="storage-application"></a>
 
-Associare le configurazioni di storage (`CreateDataSet`) e le connessioni (`ConnectDataSet`) alle rotte che necessitano di accedervi. Questo avviene nel `data` della rotta.
+In ASOR e` la route a mettere insieme i pezzi. La pagina dichiara:
 
-### Spiegazione Configurazione
-Come si collega alla rotta:
-- **CreateDataSet**: Crea il contenitore con i dati.
-- **ConnectDataSet**: Connette il contenitore alla molecola o al componente erogando nella variabile `props` i dati del contenitore.
-- **Components / Molecules**: Definisce i selettori del contenitore a cui poi è legato l'evento di aggiornamento.
+- se deve creare un dataset
+- se deve connettersi a un dataset
+- quali blocchi UI useranno quella connessione
 
-### Esempio (`app.routes.ts`)
+Questo rende il comportamento della pagina leggibile direttamente nel routing.
+
+### Esempio
 
 ```typescript
 {
     path: WikiConfig.Route.STORAGE,
     component: PageStorageComponent,
     data: {
-        // ... altre configurazioni (I18nPath, AuthCheck, ecc.)
-        
-        // Crea il contenitore con i dati
+        I18nPath: [WikiConfig.TranslationUrl.STORAGE],
         CreateDataSet: ExampleCreateDataSet,
-        
         Components: [
             {
                 Component: ExampleStorageComponent,
                 I18nPath: [WikiConfig.TranslationUrl.STORAGE],
-                // Connette il contenitore a questo componente
                 ConnectDataSet: ExampleConnectDataSet
             }
         ],
@@ -111,82 +134,203 @@ Come si collega alla rotta:
             {
                 Molecule: ExampleStorageMolecule,
                 I18nPath: [WikiConfig.TranslationUrl.STORAGE],
-                // Connette il contenitore a questa molecola
                 ConnectDataSet: ExampleConnectDataSet
             }
         ],
     } as IAsorRoute
-},
+}
 ```
 
-In questo modo, quando si naviga sulla rotta `STORAGE`:
-1.  Viene creato il DataSet `example-component` con i dati iniziali.
-2.  `ExampleStorageComponent` e `ExampleStorageMolecule` ricevono automaticamente i dati aggiornati tramite `ExampleConnectDataSet`.
+### Cosa succede in pratica
 
-> **Importante**: Affinché il matching delle rotte funzioni correttamente, ogni componente e molecola elencato in `Components` o `Molecules` **deve** dichiarare una proprietà `public static override readonly className` (vedi sezione successiva).
+| Passo | Effetto |
+|---|---|
+| 1. Entri nella route | La pagina viene attivata |
+| 2. `CreateDataSet` viene applicato | Il container viene creato |
+| 3. `ConnectDataSet` viene letto | I blocchi UI ricevono le props collegate |
+| 4. Il dataset cambia | Le `props` si aggiornano in modo reattivo |
+
+### Nota importante
+
+Il matching della route si basa sul `className` statico delle classi registrate. Se la classe non espone questo valore, la route non potra` agganciare correttamente dataset e traduzioni.
 
 ---
 
-## 4. Identificazione del Componente (`className`) <a id="storage-classname"></a>
+## 4. `className`: perche` e` obbligatorio <a id="storage-classname"></a>
 
-Ogni classe che estende `BaseComponent`, `BaseMolecule`, `BaseStorageComponent` o `BaseStorageMolecule` **deve** dichiarare una proprietà statica `className`:
+Ogni classe che estende una delle classi base ASOR registrabili deve dichiarare:
 
 ```typescript
 public static override readonly className: string = 'NomeDellaClasse';
 ```
 
-Questa proprietà viene utilizzata dal framework per:
-- **Associare i componenti alla configurazione delle rotte**: Quando una rotta viene attivata, il sistema confronta `Component.className` (o `Molecule.className`) dai dati della rotta con la classe in fase di istanziazione per erogare il corretto `ConnectDataSet` e `I18nPath`.
-- **Identificare le classi nei log**: `ConsoleLogsUtility` utilizza `className` come prefisso nei messaggi di log, garantendo log leggibili anche in build di produzione dove i nomi delle classi JavaScript vengono minificati.
+### Perche` serve
 
-### Perché `static`?
-La proprietà deve essere **static** perché deve essere disponibile sul costruttore della classe stessa (non su un'istanza), assicurando che possa essere letta durante il matching delle rotte *prima* che il componente sia completamente costruito. L'interfaccia `ICompStatic` lo impone a livello di tipi:
+| Motivo | Effetto |
+|---|---|
+| Matching con la route | Il runtime riconosce quale configurazione applicare |
+| Logging | I log restano leggibili anche in produzione |
+| Tipizzazione | TypeScript verifica la compatibilita` con `ICompStatic` |
 
-```typescript
-export interface ICompStatic {
-    readonly className: string;
-}
-```
+### A quali classi si applica
 
-Le interfacce `IComponent` e `IMolecule` richiedono rispettivamente `Type<BaseComponent> & ICompStatic` e `Type<BaseMolecule> & ICompStatic`, quindi TypeScript genererà un errore di compilazione se una classe utilizzata nella configurazione delle rotte non dichiara il `className` statico.
+| Livello | Versione base | Versione storage-aware |
+|---|---|---|
+| Component | `BaseComponent` | `BaseStorageComponent` |
+| Organism | `BaseOrganism` | `BaseStorageOrganism` |
+| Molecule | `BaseMolecule` | `BaseStorageMolecule` |
+| Atom | `BaseAtom` | `BaseStorageAtom` |
 
 ---
 
-## 5. Inizializzazione del Service <a id="storage-init"></a>
+## 5. Inizializzazione di `StateService` <a id="storage-init"></a>
 
-Il `StateService` rappresenta il core del sistema di gestione dello stato. Esso deve essere inizializzato, solitamente nel componente root dell'applicazione (`src/app/app.root.ts`), per poter funzionare correttamente.
+`StateService` e` il motore del sistema di stato. Se non viene inizializzato correttamente, i blocchi storage-aware non hanno una base affidabile su cui lavorare.
+
+La regola pratica e` questa: inizializzalo una sola volta nel bootstrap applicativo.
+
+### Esempio minimo
 
 ```typescript
 inject(StateService).initialize();
 ```
 
-Il metodo `initialize` accetta un oggetto opzionale di tipo `StateHandlerConfig` che permette di configurare aspetti avanzati dello storage, come il tipo di crittografia e la generazione delle chiavi.
+### Configurazione avanzata
+
+| Campo | Significato |
+|---|---|
+| `globalStateName` | Namespace dello storage applicativo |
+| `encryptionType` | Algoritmo usato per la cifratura |
+| `nameType` | Strategia di generazione nome |
+| `keyType` | Strategia di generazione chiave |
+| `asyncEnabled` | Modalita` di sincronizzazione e persistenza |
+| `callBackStateName` | Callback per naming custom |
+| `callBackStateKey` | Callback per key generation custom |
+
+### Esempio
 
 ```typescript
-export interface StateHandlerConfig {
-    encryptionType?: EncryptType;   // Encryption algorithm type (e.g., AES)
-    nameType?: GenerateType;        // Name generation strategy (AUTO or CUSTOM)
-    keyType?: GenerateType;         // Key generation strategy (AUTO or CUSTOM)
-    asyncEnabled?: boolean;         // Enable async storage (default: false) 
-                                    // (define fisical storage command by job or when on change props)
-                                    
-    callBackStateName?: () => string; // Callback for custom name (if nameType is CUSTOM)
-    callBackStateKey?: () => string;  // Callback for custom key (if keyType is CUSTOM)
-}
-
-// Example with custom configuration
 inject(StateService).initialize({
-    globalStateName: 'wiki', // fondamentale per isolare il sistema di storage nel singolo microservizio Angular. In alternativa, mantenendo lo stesso nome in più microservizi, è possibile condividere lo storage tra di essi.
+    globalStateName: 'wiki',
     encryptionType: AsorStorage.StateConst.EncryptType.AES,
     nameType: AsorStorage.StateConst.Generate.AUTO,
     keyType: AsorStorage.StateConst.Generate.AUTO,
-    asyncEnabled: true, // definisce se il sistema di salvataggio dei dati deve essere governato tramite un sistema di job o tramite il sistema di evento (cambiamento di stato) 
+    asyncEnabled: true,
 });
 ```
 
-### Generazione Chiavi e Nomi (`AUTO` vs `CUSTOM`) <a id="storage-keys-generation"></a>
+### AUTO vs CUSTOM
 
-Le proprietà `nameType` e `keyType` determinano come vengono generati i nomi e le chiavi per lo storage.
+| Modalita` | Quando usarla |
+|---|---|
+| `AUTO` | Quasi sempre, quando vuoi un comportamento standard e solido |
+| `CUSTOM` | Quando devi allinearti a convenzioni esterne o requisiti di sicurezza particolari |
 
-- **AUTO**: Il sistema genera automaticamente il valore. È l'opzione consigliata per la maggior parte dei casi standard.
-- **CUSTOM**: Delega la generazione del valore a una funzione di callback personalizzata (`callBackStateName` o `callBackStateKey`). Questa opzione è utile quando si ha bisogno di un controllo specifico sulla nomenclatura o sulla generazione delle chiavi crittografiche, ad esempio per integrarsi con sistemi esistenti o policy di sicurezza specifiche.
+---
+
+## 6. Esempio Molecola storage-aware <a id="storage-mol-intro"></a>
+
+Se vuoi vedere lo storage "in azione", la forma piu` didattica e` osservare una molecola che legge e scrive direttamente dentro `props`.
+
+Le tre parti da guardare sono:
+
+| Punto | Perche` e` utile |
+|---|---|
+| HTML | Mostra il binding diretto verso `props` |
+| TypeScript | Mostra quanto poco boilerplate serve |
+| Inheritance | Spiega perche` `BaseStorageMolecule<T>` fa il grosso del lavoro |
+
+### HTML della Molecola <a id="storage-mol-html"></a>
+
+Per l'esempio completo e il markup reale, consulta la pagina dedicata all'esempio molecule storage.
+
+### TypeScript della Molecola <a id="storage-mol-ts"></a>
+
+Per l'esempio completo e la logica reale, consulta la pagina dedicata all'esempio molecule storage.
+
+### Ereditarieta` della Molecola <a id="storage-mol-inheritance"></a>
+
+Il punto chiave e` che `BaseStorageMolecule<T>` espone `props` in modo tipizzato e reattivo, quindi la molecola puo` concentrarsi sulla UI invece che sulla gestione manuale della sincronizzazione.
+
+---
+
+## 7. Esempio Component storage-aware <a id="storage-comp-intro"></a>
+
+Un component storage-aware e` utile quando vuoi visualizzare, derivare o orchestrare dati di stato a un livello piu` alto rispetto alla molecola.
+
+Anche qui conviene leggere l'esempio in tre parti:
+
+| Punto | Perche` e` utile |
+|---|---|
+| HTML | Mostra come presentare i dati provenienti dallo stato |
+| TypeScript | Mostra getter e logica derivata |
+| Inheritance | Spiega il ruolo di `BaseStorageComponent<T>` |
+
+### HTML del Component <a id="storage-comp-html"></a>
+
+Per l'esempio completo e il template reale, consulta la pagina dedicata all'esempio component storage.
+
+### TypeScript del Component <a id="storage-comp-ts"></a>
+
+Per l'esempio completo e la logica reale, consulta la pagina dedicata all'esempio component storage.
+
+### Ereditarieta` del Component <a id="storage-comp-inheritance"></a>
+
+Il valore di `BaseStorageComponent<T>` sta nel fatto che collega route, dataset e lifecycle della pagina, lasciando al component solo la responsabilita` di coordinare la UI.
+
+---
+
+## 8. `props`: la superficie pubblica dello stato
+
+Le classi storage-aware non ti chiedono di gestire a mano subscription e aggiornamenti della view. Il punto di accesso normale ai dati e` `props`.
+
+Questo rende il codice piu` leggibile:
+
+- il dataset sta nel runtime
+- la connessione la dichiari nella route
+- il componente usa `props`
+
+### Esempi d'uso
+
+| Caso | Esempio |
+|---|---|
+| Lettura semplice | `this.props.title` |
+| Accesso a oggetti annidati | `this.props.form.name` |
+| Binding in template | `[(ngModel)]="props.form.name"` |
+
+### Regola pratica
+
+Quando il blocco e` storage-aware, evita di duplicare i dati in proprieta` locali se non hai una ragione precisa. Di solito `props` basta.
+
+---
+
+## 7. Lettura e scrittura nei blocchi UI
+
+Le molecole, gli atomi, gli organismi e i componenti storage-aware possono leggere e scrivere nel dataset attraverso `props`.
+
+Questo significa che, in molti casi, anche operazioni molto normali della UI diventano immediate.
+
+### Esempi frequenti
+
+| Operazione | Pattern |
+|---|---|
+| Modifica di un input | `[(ngModel)]="props.form.name"` |
+| Toggle di una selezione | `role.selected = !role.selected` |
+| Lettura di un valore | `this.props.form.age` |
+| Derivazione di un valore vista | getter che legge `props` |
+
+### Quando aggiungere logica extra
+
+Serve logica extra quando:
+
+- devi validare
+- devi trasformare dati
+- devi derivare una vista piu` leggibile
+- vuoi evitare template troppo complessi
+
+In quel caso conviene spostare la complessita` in getter o metodi di supporto, lasciando il template pulito.
+
+### Generazione di nomi e chiavi <a id="storage-keys-generation"></a>
+
+Se il progetto usa la modalita` `AUTO`, il framework gestisce naming e key generation in modo trasparente.
+Se usi `CUSTOM`, allora stai prendendo una decisione architetturale e devi fornire callback coerenti per mantenere stabile il comportamento dello storage.
