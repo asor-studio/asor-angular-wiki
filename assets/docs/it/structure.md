@@ -234,6 +234,22 @@ Esempio:
 const msg = this.translate.transform('ERROR_MSG');
 ```
 
+### Nota importante sui binding verso componenti figli
+
+Quando la traduzione viene usata direttamente nel template del componente corrente, `| translate` puo` ricavare il namespace dal contesto ASOR associato alla view.
+
+Nei binding padre-figlio, invece, questo contesto non e` sempre sufficiente. Un caso tipico e` il passaggio di una label gia tradotta a un componente figlio:
+
+```html
+<app-settings-color-swatch
+    [label]="'SETTINGS_APPEARANCE_PANEL.COLOR_1' | translate:I18nPath"
+    [previewColor]="'#f5dece'"
+    [active]="true"
+></app-settings-color-swatch>
+```
+
+In questo scenario e` consigliato passare esplicitamente `I18nPath` alla pipe. In questo modo la traduzione resta agganciata al namespace del padre e non dipende dal contesto runtime con cui Angular risolve il binding del figlio.
+
 ---
 
 ## Sistema UI: Components, Organisms, Molecules e Atoms <a id="structure-components"></a>

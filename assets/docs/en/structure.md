@@ -265,6 +265,22 @@ export class MyComponent {
 }
 ```
 
+### Important Note About Parent-to-Child Bindings
+
+When a translation is evaluated directly inside the current component template, `| translate` can resolve the namespace from the ASOR view context.
+
+Parent-to-child bindings are different. In those cases, the implicit context may not be enough, especially when a translated value is passed as an input to a child component:
+
+```html
+<app-settings-color-swatch
+    [label]="'SETTINGS_APPEARANCE_PANEL.COLOR_1' | translate:I18nPath"
+    [previewColor]="'#f5dece'"
+    [active]="true"
+></app-settings-color-swatch>
+```
+
+In this scenario, the recommended approach is to pass `I18nPath` explicitly to the pipe. This keeps the translation bound to the parent's namespace instead of relying on the runtime view context used by Angular when resolving the child input.
+
 ---
 
 ## Components and Molecules System <a id="structure-components"></a>
