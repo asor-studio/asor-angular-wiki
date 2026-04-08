@@ -226,6 +226,11 @@ inject(StateService).initialize({
 | `AUTO` | Quasi sempre, quando vuoi un comportamento standard e solido |
 | `CUSTOM` | Quando devi allinearti a convenzioni esterne o requisiti di sicurezza particolari |
 
+### Generazione di nomi e chiavi <a id="storage-keys-generation"></a>
+
+Se il progetto usa la modalita` `AUTO`, il framework gestisce naming e key generation in modo trasparente.
+Se usi `CUSTOM`, allora stai prendendo una decisione architetturale e devi fornire callback coerenti per mantenere stabile il comportamento dello storage.
+
 ---
 
 ## 6. Esempio Molecola storage-aware <a id="storage-mol-intro"></a>
@@ -277,60 +282,3 @@ Per l'esempio completo e la logica reale, consulta la pagina dedicata all'esempi
 ### Ereditarieta` del Component <a id="storage-comp-inheritance"></a>
 
 Il valore di `BaseStorageComponent<T>` sta nel fatto che collega route, dataset e lifecycle della pagina, lasciando al component solo la responsabilita` di coordinare la UI.
-
----
-
-## 8. `props`: la superficie pubblica dello stato
-
-Le classi storage-aware non ti chiedono di gestire a mano subscription e aggiornamenti della view. Il punto di accesso normale ai dati e` `props`.
-
-Questo rende il codice piu` leggibile:
-
-- il dataset sta nel runtime
-- la connessione la dichiari nella route
-- il componente usa `props`
-
-### Esempi d'uso
-
-| Caso | Esempio |
-|---|---|
-| Lettura semplice | `this.props.title` |
-| Accesso a oggetti annidati | `this.props.form.name` |
-| Binding in template | `[(ngModel)]="props.form.name"` |
-
-### Regola pratica
-
-Quando il blocco e` storage-aware, evita di duplicare i dati in proprieta` locali se non hai una ragione precisa. Di solito `props` basta.
-
----
-
-## 7. Lettura e scrittura nei blocchi UI
-
-Le molecole, gli atomi, gli organismi e i componenti storage-aware possono leggere e scrivere nel dataset attraverso `props`.
-
-Questo significa che, in molti casi, anche operazioni molto normali della UI diventano immediate.
-
-### Esempi frequenti
-
-| Operazione | Pattern |
-|---|---|
-| Modifica di un input | `[(ngModel)]="props.form.name"` |
-| Toggle di una selezione | `role.selected = !role.selected` |
-| Lettura di un valore | `this.props.form.age` |
-| Derivazione di un valore vista | getter che legge `props` |
-
-### Quando aggiungere logica extra
-
-Serve logica extra quando:
-
-- devi validare
-- devi trasformare dati
-- devi derivare una vista piu` leggibile
-- vuoi evitare template troppo complessi
-
-In quel caso conviene spostare la complessita` in getter o metodi di supporto, lasciando il template pulito.
-
-### Generazione di nomi e chiavi <a id="storage-keys-generation"></a>
-
-Se il progetto usa la modalita` `AUTO`, il framework gestisce naming e key generation in modo trasparente.
-Se usi `CUSTOM`, allora stai prendendo una decisione architetturale e devi fornire callback coerenti per mantenere stabile il comportamento dello storage.

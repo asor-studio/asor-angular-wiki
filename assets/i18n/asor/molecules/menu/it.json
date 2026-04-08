@@ -36,6 +36,7 @@
     "MENU.SUB.STORAGE.CONFIG_DETAILS": "Dettagli Opzioni di Configurazione",
     "MENU.SUB.STORAGE.CONNECTION": "Connessione del DataSet",
     "MENU.SUB.STORAGE.APPLICATION": "Applicazione della Configurazione alle Rotte",
+    "MENU.SUB.STORAGE.CLASSNAME": "Identificazione del Componente (className)",
     "MENU.SUB.STORAGE.INIT": "Inizializzazione del Service",
     "MENU.SUB.STORAGE.KEYS_GENERATION": "Generazione Chiavi e Nomi",
     "MENU.SUB.STORAGE.MOL_INTRO": "Storage Example Molecule",

@@ -36,6 +36,7 @@
     "MENU.SUB.STORAGE.CONFIG_DETAILS": "Configuration Options Details",
     "MENU.SUB.STORAGE.CONNECTION": "DataSet Connection",
     "MENU.SUB.STORAGE.APPLICATION": "Applying Configuration to Routes",
+    "MENU.SUB.STORAGE.CLASSNAME": "Component Identification (className)",
     "MENU.SUB.STORAGE.INIT": "Service Initialization",
     "MENU.SUB.STORAGE.KEYS_GENERATION": "Key & Name Generation",
     "MENU.SUB.STORAGE.MOL_INTRO": "Storage Example Molecule",
