@@ -52,7 +52,7 @@ The materials in this wiki are for informational and educational purposes only. 
 
 The library was designed and developed by **robrosc**.
 
-- 🏢 **Organization**: [--> ASOR Studio <--](https://github.com/asor-studio)
+- 🏢 **Namespaces**: [--> ASOR Studio <--](https://github.com/asor-studio)
 - ✉️ **Email**: [--> asorstudio.contact@gmail.com <--](mailto:asorstudio.contact@gmail.com)
 
 ### Need Help?
