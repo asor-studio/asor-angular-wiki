@@ -1,78 +1,57 @@
 # Asor Widget (`AsorWidgetComponent`)
 
-L'`AsorWidgetComponent` è un componente di debug e ispezione incluso nella libreria `asor-core`. Si presenta come un **pulsante floating** posizionato nell'angolo inferiore destro dell'applicazione che, una volta cliccato, apre un **pannello a scomparsa** contenente strumenti di diagnostica in tempo reale.
+L'`AsorWidgetComponent` e` il punto in cui `asor-core` mostra il suo lato piu` pratico durante sviluppo e debugging. Non e` solo un pulsante flottante: e` una finestra rapida sullo stato interno dell'applicazione.
 
-Il widget è progettato per essere utilizzato durante lo sviluppo e il testing dell'applicazione, offrendo accesso immediato a console di log e stato dello storage senza lasciare il contesto della pagina corrente.
+L'idea e` semplice: mentre lavori su route, dataset, log e cache, non dovresti essere costretto ogni volta ad abbandonare la pagina per aprire strumenti esterni o ricostruire manualmente cosa sta succedendo.
 
 ![Pulsante floating del widget visibile nell'angolo inferiore destro](assets/docs/images/widget-storage-page.png)
 
+---
+
 ## Panoramica <a id="widget-overview"></a>
 
-Il componente `AsorWidgetComponent` è composto da:
+Il widget e` composto da tre elementi principali:
 
-*   **Floating Button**: Un pulsante circolare con il logo Asor Core, posizionato in basso a destra (`position: fixed`). Cliccandolo si apre/chiude il pannello.
-*   **Pannello a Scomparsa (Slider)**: Un pannello che occupa l'80% dell'altezza dello schermo, animato dal basso verso l'alto. Contiene un header con tab di navigazione e un'area di contenuto.
-*   **Tab di Navigazione**: Due tab principali — **Console** e **Storage** — che permettono di alternare tra le viste disponibili.
+| Parte | Ruolo |
+|---|---|
+| Floating button | Apre e chiude il pannello |
+| Slider panel | Contiene strumenti e viste di diagnostica |
+| Tab interne | Separano log e storage |
 
-### Dettagli Tecnici
+### Dettagli tecnici
 
 | Proprietà | Valore |
 |---|---|
-| **Selector** | `asor-core-widget` |
-| **Encapsulation** | `ViewEncapsulation.ShadowDom` |
-| **Standalone** | `true` |
-| **Modulo** | `asor-core` |
+| Selector | `asor-core-widget` |
+| Encapsulation | `ViewEncapsulation.ShadowDom` |
+| Standalone | `true` |
+| Modulo | `asor-core` |
 
-> L'utilizzo di `ShadowDom` garantisce che gli stili del widget siano completamente isolati dall'applicazione host, evitando conflitti CSS.
+L'uso di `ShadowDom` e` importante perche` isola gli stili del widget dal resto dell'applicazione host.
 
-### Codice Sorgente
+### Modalita` disponibili
 
-```typescript
-// projects/asor-core/src/lib/widget/asor-widget.component.ts
-import { Component, HostListener, Input, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ConsoleTabComponent } from './console-tab/console-tab.component';
-import { StorageTabComponent } from './storage-tab/storage-tab.component';
-
-export type AsorWidgetMode = 'off' | 'on' | 'spy';
-
-@Component({
-    selector: 'asor-core-widget',
-    standalone: true,
-    imports: [CommonModule, ConsoleTabComponent, StorageTabComponent],
-    templateUrl: './asor-widget.component.html',
-    styleUrls: ['./asor-widget.component.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom
-})
-export class AsorWidgetComponent {
-    @Input() mode: AsorWidgetMode = 'on';
-    isOpen = false;
-    activeTab: 'console' | 'storage' | 'other' = 'console';
-    // ...
-}
-```
-
-### Proprietà di Input
-
-| Proprietà | Tipo | Default | Descrizione |
-|---|---|---|---|
-| `mode` | `'off' \| 'on' \| 'spy'` | `'on'` | Controlla la modalità di visibilità del widget |
-
-#### Valori di Mode
-
-*   **`on`** — Il widget è sempre visibile e funzionante (comportamento predefinito).
-*   **`off`** — Il widget è completamente nascosto e disabilitato.
-*   **`spy`** — Il widget è nascosto di default. Premere **`CTRL + I`** per attivare/disattivare la sua visibilità. Utile in ambienti di produzione dove il widget deve rimanere invisibile a meno che non venga attivato esplicitamente dallo sviluppatore.
+| `mode` | Comportamento |
+|---|---|
+| `on` | Widget sempre visibile |
+| `off` | Widget disabilitato e nascosto |
+| `spy` | Widget nascosto finche` non premi `CTRL + I` |
 
 ---
 
-## Come Usarlo <a id="widget-usage"></a>
+## Come usarlo <a id="widget-usage"></a>
 
-Per integrare il widget nella propria applicazione, è sufficiente:
+Il modo corretto di pensare il widget e` questo: va inserito nel layout principale, come strumento trasversale all'applicazione.
 
-### 1. Importare il Componente
+### Dove inserirlo
 
-Aggiungere `AsorWidgetComponent` negli imports del componente root (o di qualsiasi componente che funga da layout principale).
+| Punto | Suggerimento |
+|---|---|
+| Root component | Posizione ideale |
+| Layout principale | Ottima alternativa |
+| Ultimo elemento del template | Consigliato per chiarezza strutturale |
+
+### Esempio
 
 ```typescript
 import { AsorWidgetComponent } from '@asor-studio/asor-core';
@@ -80,10 +59,7 @@ import { AsorWidgetComponent } from '@asor-studio/asor-core';
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [
-        // ... altri imports
-        AsorWidgetComponent
-    ],
+    imports: [AsorWidgetComponent],
     template: `
         <router-outlet></router-outlet>
         <asor-core-widget mode="on"></asor-core-widget>
@@ -92,72 +68,107 @@ import { AsorWidgetComponent } from '@asor-studio/asor-core';
 export class AppRoot { }
 ```
 
-### 2. Aggiungere il Tag nel Template
-
-Inserire il selettore `<asor-core-widget>` nel template HTML, idealmente come ultimo elemento del layout principale.
+### Esempi di utilizzo nel template
 
 ```html
-<!-- Sempre visibile -->
 <asor-core-widget mode="on"></asor-core-widget>
-
-<!-- Completamente nascosto -->
 <asor-core-widget mode="off"></asor-core-widget>
-
-<!-- Nascosto fino alla pressione di CTRL + I -->
 <asor-core-widget mode="spy"></asor-core-widget>
 ```
 
-> **Nota**: Il widget si posiziona automaticamente in basso a destra grazie al `position: fixed`. Non è necessario aggiungere stili aggiuntivi.
->
-> In modalità `spy`, premendo nuovamente **`CTRL + I`** il widget verrà nascosto e il pannello chiuso se aperto.
+### Nota pratica
 
-> [!TIP]
-> Puoi provare la modalità `spy` adesso! Vai alla sezione **Archiviazione Dati** di questa wiki e premi **`CTRL + I`** per rivelare il widget nascosto.
+Non serve aggiungere CSS custom per posizionarlo: il widget e` gia` progettato per stare in basso a destra con `position: fixed`.
 
 ---
 
 ## Tab Console <a id="widget-console"></a>
 
-Il tab **Console** fornisce un flusso di log in tempo reale proveniente dal sistema `ConsoleLogsUtility` di `asor-core`. Permette di monitorare l'attività dell'applicazione senza aprire gli strumenti di sviluppo del browser.
+La tab **Console** e` utile quando vuoi capire cosa sta accadendo senza aprire ogni volta i DevTools del browser.
+
+Mostra i log emessi dal sistema ASOR e dalle classi registrate, con livelli e filtri leggibili.
 
 ![Tab Console con flusso di log in tempo reale](assets/docs/images/widget-console-tab.png)
 
-### Funzionalità
+### Funzionalità principali
 
-*   **LOGS STREAM**: Visualizzazione in tempo reale di tutti i log emessi dall'applicazione, colorati per livello (DEBUG, INFO, WARNING, ERROR).
-*   **Filtri per Livello**: Badge filtro per tipo — `INFO`, `DEBUG`, `WARNING` — con contatori per ogni categoria.
-*   **Barra di Ricerca**: Ricerca testuale nei log (`Search logs...`).
-*   **Configurazione per Classe**: Pannello laterale sinistro (**CONFIGURATION**) che permette di impostare il livello di log per ogni classe/servizio registrato:
-    *   `StateService`
-    *   `AuthGuard`
-    *   `CacheInterceptor`
-    *   `ErrorInterceptor`
-    *   `NotifyErrorService`
-    *   `HttpRequestHandler`
-*   **Pulsante Clear**: Per svuotare il flusso dei log correnti (`X Clear`).
+| Funzionalita` | Descrizione |
+|---|---|
+| Log stream | Flusso live dei log |
+| Filtri per livello | Selezione per `INFO`, `DEBUG`, `WARNING`, `ERROR` |
+| Ricerca | Cerca testo nei log |
+| Configurazione per classe | Regola i livelli per classi e servizi registrati |
+| Clear | Pulisce il flusso corrente |
+
+### Perche` e` utile
+
+E` particolarmente comoda quando stai lavorando su:
+
+- bootstrap dell'app
+- route guard
+- cache interceptor
+- gestione errori
+- dataset e collegamenti storage-aware
 
 ---
 
 ## Tab Storage <a id="widget-storage"></a>
 
-Il tab **Storage** offre una vista ispezionabile dello stato dello storage (`StateService`) dell'applicazione. Mostra i dati contenuti nei DataSet registrati e il registro dei componenti collegati.
+La tab **Storage** e` la parte piu` preziosa quando lavori con `StateService`. Ti permette di vedere se i dataset sono stati creati, se i componenti sono registrati e se la sincronizzazione sta avvenendo come previsto.
 
 ![Tab Storage con Data Containers e Component Registry](assets/docs/images/widget-storage-tab.png)
 
-### Funzionalità
+### Cosa mostra
 
-*   **Indicatori di Stato**: Barra superiore con informazioni chiave sullo storage:
-    *   `INITIALIZED` — Stato di inizializzazione (YES/NO)
-    *   `SYNC INTERVAL` — Stato del sincronizzatore (Active/Inactive)
-    *   `ENCRYPTION` — Tipo di crittografia utilizzata (es. AES)
-    *   `DATA ELEMENTS` — Numero di elementi nello storage
-    *   `REGISTRY ENTRIES` — Numero di componenti registrati
-*   **Data Containers**: Pannello sinistro che elenca i DataSet registrati con:
-    *   Nome del container e tipo (es. `VOLATILE`)
-    *   Dati crittografati (visualizzati in forma hash)
-    *   Timestamp ultimo aggiornamento
-    *   Azioni rapide: visualizza, copia, esporta, elimina
-*   **Component Registry**: Tabella a destra che mostra i componenti e le molecole collegati allo storage con:
-    *   `Component` — Nome della classe registrata
-    *   `Prop` — Proprietà collegata (es. `title`, `form`)
-    *   `Path` — Percorso di collegamento al DataSet
+| Sezione | Contenuto |
+|---|---|
+| Indicatori di stato | Stato globale dello storage |
+| Data Containers | Elenco dei dataset presenti |
+| Component Registry | Blocchi UI collegati allo storage |
+
+### Indicatori principali
+
+| Indicatore | Significato |
+|---|---|
+| `INITIALIZED` | Dice se `StateService` e` stato inizializzato |
+| `SYNC INTERVAL` | Mostra lo stato del sincronizzatore |
+| `ENCRYPTION` | Tipo di cifratura usata |
+| `DATA ELEMENTS` | Numero di dataset o elementi presenti |
+| `REGISTRY ENTRIES` | Numero di componenti registrati |
+
+### Data Containers
+
+Qui puoi vedere per ogni dataset:
+
+| Campo | Significato |
+|---|---|
+| Nome container | Nome del dataset |
+| Tipo | `VOLATILE`, `SESSION`, `LOCAL` |
+| Dati | Valore o rappresentazione cifrata |
+| Timestamp | Ultimo aggiornamento |
+| Azioni rapide | Visualizza, copia, esporta, elimina |
+
+### Component Registry
+
+Questa tabella aiuta a capire quali blocchi stanno leggendo lo stato e come sono collegati.
+
+| Colonna | Significato |
+|---|---|
+| `Component` | Nome della classe registrata |
+| `Prop` | Proprietà collegata |
+| `Path` | Path del dataset usato dal binding |
+
+---
+
+## Quando usarlo davvero
+
+Il widget da` il meglio quando stai controllando problemi come:
+
+| Problema sospetto | Cosa guardare |
+|---|---|
+| Traduzioni che non compaiono | Bootstrap e log in Console |
+| Dataset che non si aggiornano | Tab Storage e registry |
+| Route che sembrano corrette ma non iniettano props | Component Registry |
+| Bootstrap incompleto | `INITIALIZED`, log e presenza dei dataset |
+
+In pratica, il widget e` un buon ponte tra documentazione, runtime e debugging reale: ti permette di vedere se l'applicazione si sta comportando come `asor-core` si aspetta.

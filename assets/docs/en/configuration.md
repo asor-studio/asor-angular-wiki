@@ -1,169 +1,535 @@
 # Project Configuration
 
-In this guide, we will cover the fundamental steps to configure a new Angular project using the `asor-core` library.
+This guide follows the exact bootstrap produced by `asor setup`, so the steps below match the files and folders that the CLI actually generates inside an Angular workspace.
 
 ---
 
-## 1. Installation <a id="config-installation"></a>
+## 1. Install the CLI <a id="config-installation"></a>
 
-To get started, install the library in your project via npm:
+Install the official CLI:
 
 ```bash
-npm install @asor-studio/asor-core
+npm install -g @asor-studio/asor-cli
 ```
 
-Ensure you also have the required peer dependencies installed (e.g., `@angular/common`, `@angular/core`, `rxjs`).
+If you install it locally instead of globally, run it with `npx` or `npm exec`:
+
+```bash
+npx asor help
+```
+
+```bash
+npm exec asor help
+```
+
+`asor setup` must be executed from an Angular workspace root, in the same folder where `angular.json` is located.
 
 ---
 
-## 2. Assets Configuration (`angular.json`) <a id="config-assets"></a>
+## 2. Run `asor setup` <a id="config-cli-setup"></a>
 
-`asor-core` relies on dynamic loading of translation files (i18n). You need to configure `angular.json` to correctly serve public assets.
+If you are starting from scratch:
 
-```json
-"assets": [
-  {
-    "glob": "**/*",
-    "input": "public",
-    "output": "/"
+```bash
+ng new my-angular-project
+cd my-angular-project
+asor setup
+```
+
+During setup, the CLI asks for:
+
+- `Prefix`: used to rename config classes, files, selectors, and i18n namespaces
+- `baseHref`: normalized with leading and trailing `/` and reused in both Angular and ASOR config
+
+Example values:
+
+- `Prefix`: `App`, `Nexus`, `Portal`
+- `baseHref`: `/`, `/portal/`
+
+---
+
+## 3. What `asor setup` generates <a id="config-generated"></a>
+
+When the command completes, it performs these actions:
+
+1. Installs `@asor-studio/asor-core` and `crypto-js`
+2. Ensures the Atomic Design folders exist in `src/app`
+3. Copies the ASOR scaffold into the Angular app
+4. Creates the default i18n namespaces for `page-home` and `molecule-sample-widget`
+5. Updates `angular.json` with the selected `baseHref`
+6. Injects `<asor-core-widget mode="on" />` into the root component when possible
+7. Imports `AsorWidgetComponent` in the root standalone component when needed
+8. Saves the chosen setup values into `asor-core.json`
+
+The generated structure includes:
+
+- `src/app/app.config.ts`
+- `src/app/app.routes.ts`
+- `src/app/config/<prefix>.config.ts`
+- `src/app/config/<prefix>-cache.config.ts`
+- `src/app/config/<prefix>-asor.config.ts`
+- `src/app/config/<prefix>-state.config.ts`
+- `src/app/config/interfaces/<prefix>-state.interfaces.ts`
+- `src/app/pages/page-home/*`
+- `src/app/molecules/molecule-sample-widget/*`
+
+---
+
+## 4. Generated Assets and i18n <a id="config-assets"></a>
+
+The CLI creates translations under:
+
+- `public/assets/i18n/<prefix>/...` if the project already contains a `public` folder
+- `src/assets/i18n/<prefix>/...` otherwise
+
+The initial namespaces are:
+
+- `page-home`
+- `molecule-sample-widget`
+
+Each namespace receives:
+
+- `en.json`
+- `it.json`
+
+The generated `<prefix>.config.ts` is also updated so that:
+
+- `SiteBaseUrl` matches the chosen `baseHref`
+- `SiteAssetsUrl` points to `<baseHref>/assets`
+- `TranslationUrl.HOME` points to `/<prefix>/page-home`
+- `TranslationUrl.SAMPLE_WIDGET` points to `/<prefix>/molecule-sample-widget`
+- `Cache.<PREFIX>_BASE_I18N` points to `i18n/<prefix>`
+
+---
+
+## 5. Attention Point: `asor-cli`, README, and Commands <a id="config-cli-reference"></a>
+
+When working with `asor-core`, it is useful to remember that a major part of the ecosystem lives in `asor-cli`.
+
+That means:
+
+`projects/asor-cli/README.md`
+
+should not be treated as secondary documentation. It is the practical reference for understanding:
+
+- which commands really exist
+- which flags they support
+- which files they generate
+- when a command updates routes, i18n, logs, or bootstrap
+
+In short, if `asor-core` explains how the runtime behaves, the CLI README explains how to build the pieces that runtime expects.
+
+### Main CLI commands
+
+| Command | When to use it | Main effect |
+|---|---|---|
+| `asor setup` | At the beginning of a project | Configures Angular for the ASOR ecosystem |
+| `asor help` | When you want current syntax and flags | Shows the live CLI help |
+| `asor -g -page <name>` | When you need a new page | Generates a route-level page |
+| `asor -g -molecule <name>` | When you need a medium functional UI block | Generates a molecule |
+| `asor -g -atom <name>` | When you need a minimal UI element | Generates an atom |
+| `asor -g -organism <name>` | When you need a large reusable UI section | Generates an organism |
+| `asor -g -service <name>` | When you need reusable application logic | Generates a service |
+| `asor -g -mock-service <name>` | When you want to simulate backend endpoints | Generates a mock controller service |
+| `asor -g -state <name>` | When you need new datasets and state connections | Generates state config and interfaces |
+
+### Most useful flags
+
+| Flag | Meaning |
+|---|---|
+| `-full` | Enables route, i18n, and configuration injection where supported |
+| `-storage` | Generates the storage-aware variant (`BaseStorage*`) |
+| `-in <page>` | Injects a molecule, atom, or organism into a specific page |
+
+### Practical rule
+
+Before using a command from memory, it is a good habit to compare it with the CLI README or with `asor help`, especially when that command is expected to:
+
+- patch `app.routes.ts`
+- add i18n namespaces
+- register logs
+- register mock controllers
+- update state configuration
+
+---
+
+## 6. Manual Setup Without `asor setup` <a id="config-manual"></a>
+
+If you prefer to wire the project manually, you can create a minimal working ASOR project by reproducing the same building blocks generated by the CLI.
+
+### Step 1. Install dependencies
+
+```bash
+npm install @asor-studio/asor-core crypto-js
+```
+
+### Step 2. Create the base folders
+
+Create at least:
+
+- `src/app/config`
+- `src/app/config/interfaces`
+- `src/app/pages/page-home`
+- `src/app/molecules/molecule-sample-widget`
+
+Also create your i18n folder under either:
+
+- `public/assets/i18n/app`
+- `src/assets/i18n/app`
+
+### Step 3. Add the main ASOR constants
+
+Create `src/app/config/app.config.ts`:
+
+```ts
+import { ConfigConst } from '@asor-studio/asor-core';
+
+export class AppConfig extends ConfigConst {
+  static override SiteBaseUrl = '/';
+  static override SiteAssetsUrl = '/assets';
+
+  protected static override _routeExtensions = {
+    HOME: 'home',
+  };
+
+  protected static override _translationUrlExtensions = {
+    DefaultLanguage: 'en',
+    HOME: '/page-home',
+    SAMPLE_WIDGET: '/molecule-sample-widget',
+  };
+
+  protected static override _urlExtensions = {
+    HOME: '/home',
+  };
+
+  protected static override _cacheExtensions = {
+    APP_BASE_I18N: 'i18n/app',
+  };
+
+  static override get Route() { return { ...super.Route, ...this._routeExtensions }; }
+  static override get TranslationUrl() { return { ...super.TranslationUrl, ...this._translationUrlExtensions }; }
+  static override get Url() { return { ...super.Url, ...this._urlExtensions }; }
+  static override get Cache() { return { ...super.Cache, ...this._cacheExtensions }; }
+
+  static {
+    ConfigConst.SetConfiguration(AppConfig);
   }
-],
+}
 ```
 
-Ensure that the `public/assets/i18n` folder exists and contains the JSON translation files.
+### Step 4. Define state interface, dataset, and cache
 
----
+Create `src/app/config/interfaces/app-state.interfaces.ts`:
 
-## 3. Global Configuration (`app.config.ts`) <a id="config-global"></a>
+```ts
+export interface IAppSystemStatus {
+  isMenuOpen: boolean;
+  appVersion: string;
+  currentUser: string | null;
+}
+```
 
-The `app.config.ts` file is the entry point for configuring global providers. Here we enable routing, the HTTP client, and `asor-core` interceptors.
+Create `src/app/config/app-state.config.ts`:
 
-```typescript
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { CacheInterceptor, ErrorInterceptor } from '@asor-studio/asor-core';
-import { routes } from './app.routes';
+```ts
+import { AsorStorage, ICreateDataSet, IConnectDataSet } from '@asor-studio/asor-core';
+import { IAppSystemStatus } from './interfaces/app-state.interfaces';
 
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // 1. Enable Change Detection (Zone.js or Zoneless)
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    
-    // 2. Enable Routing
-    provideRouter(routes),
-    
-    // 3. Enable HTTP Client with Interceptor DI support
-    provideHttpClient(withInterceptorsFromDi()),
+export const AppStateCreateSystemDataSet: ICreateDataSet = {
+  name: 'app-system-status',
+  data: {
+    isMenuOpen: false,
+    appVersion: '1.0.0',
+    currentUser: null,
+  } as IAppSystemStatus,
+  option: {
+    storeType: AsorStorage.StateConst.StoreType.VOLATILE,
+    encrypt: false,
+  },
+};
 
-    // 4. Register Cache Interceptor (Cache System)
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CacheInterceptor,
-      multi: true,
-    },
-
-    // 5. Register Error Interceptor (Error Notification System)
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true,
-    },
-  ]
+export const AppStateConnectionSystem: IConnectDataSet = {
+  name: 'AppSystemConnection',
+  selectors: {
+    isMenuOpen: 'app-system-status.isMenuOpen',
+    appVersion: 'app-system-status.appVersion',
+    currentUser: 'app-system-status.currentUser',
+  },
 };
 ```
 
----
+Create `src/app/config/app-cache.config.ts`:
 
-## 4. Application Initialization (`app.root.ts`) <a id="config-init"></a>
+```ts
+import { AsorGlobalEnum, ConfigCache } from '@asor-studio/asor-core';
+import { AppConfig } from './app.config';
 
-The root component (`AppComponent` or `AppRoot`) is responsible for initializing core services and configuring logs at application bootstrap.
+export class AppCacheConfig extends ConfigCache {
+  public static override globalStateName = 'app';
 
-```typescript
-import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ConsoleLogsConfig, StateService } from '@asor-studio/asor-core';
+  protected static override _pathsExtensions = [
+    {
+      pathValue: AppConfig.Cache.APP_BASE_I18N,
+      persistenceType: AsorGlobalEnum.CacheType.VOLATILE,
+      encriptType: AsorGlobalEnum.CacheEncriptType.NONE,
+      reqPayloadCache: false,
+      resctrictRoute: AppConfig.Route.NONE,
+      clearOn: [],
+    },
+  ];
+
+  static {
+    ConfigCache.SetConfiguration(AppCacheConfig);
+  }
+}
+```
+
+### Step 5. Initialize ASOR in `app.config.ts`
+
+Create `src/app/config/app-asor.config.ts`:
+
+```ts
+import { ConsoleLogsConfig, StateService, AsorStorage } from '@asor-studio/asor-core';
+import { AppConfig } from './app.config';
+import { AppCacheConfig } from './app-cache.config';
+import { AppStateCreateSystemDataSet } from './app-state.config';
+
+export function initializeAsorCoreApp(stateService: StateService) {
+  return () => {
+    ConsoleLogsConfig.silent = false;
+
+    AppConfig.init?.();
+    AppCacheConfig.init?.();
+
+    stateService.initialize({
+      globalStateName: 'app',
+      encryptionType: AsorStorage.StateConst.EncryptType.AES,
+      nameType: AsorStorage.StateConst.Generate.AUTO,
+      keyType: AsorStorage.StateConst.Generate.AUTO,
+      asyncEnabled: true,
+    });
+
+    stateService.createDataSet(
+      AppStateCreateSystemDataSet.name,
+      AppStateCreateSystemDataSet.data,
+      AppStateCreateSystemDataSet.option!
+    );
+
+    return true;
+  };
+}
+```
+
+Then wire it in `src/app/app.config.ts`:
+
+```ts
+import { ApplicationConfig, APP_INITIALIZER, provideZonelessChangeDetection } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { CacheInterceptor, ErrorInterceptor, MockHttpInterceptor, MockOrchestratorService, StateService } from '@asor-studio/asor-core';
+import { routes } from './app.routes';
+import { initializeAsorCoreApp } from './config/app-asor.config';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAsorCoreApp,
+      deps: [StateService, MockOrchestratorService],
+      multi: true,
+    },
+    provideZonelessChangeDetection(),
+    provideRouter(routes, withComponentInputBinding()),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: MockHttpInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: APP_BASE_HREF, useValue: '/' },
+  ],
+};
+```
+
+### Step 6. Create one page, one molecule, and the route
+
+Minimal `src/app/molecules/molecule-sample-widget/sample-widget.molecule.ts`:
+
+```ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BaseStorageMolecule, TranslatePipe } from '@asor-studio/asor-core';
+import { IAppSystemStatus } from '../../config/interfaces/app-state.interfaces';
 
 @Component({
-    selector: 'app-root',
-    standalone: true,
-    imports: [RouterOutlet],
-    template: `<router-outlet></router-outlet>`
+  selector: 'app-sample-widget',
+  standalone: true,
+  imports: [CommonModule, TranslatePipe],
+  template: `<section>{{ 'TITLE' | translate }}</section>`,
 })
-export class AppComponent {
-    constructor() {
-        // 1. Log Level Configuration
-        // Enable logs for specific services (e.g., StateService, MyComponent)
-        ConsoleLogsConfig.setClassLevels(StateService.className || '', ['ERROR', 'WARNING']);
-        // ConsoleLogsConfig.setClassLevels('MyComponent', ['INFO', 'DEBUG', 'ERROR']);
-
-        // 2. State Service Initialization
-        // Crucial for application state restoration
-        inject(StateService).initialize();
-    }
+export class SampleWidgetMolecule extends BaseStorageMolecule<IAppSystemStatus> {
+  static override readonly className = 'SampleWidgetMolecule';
 }
 ```
+
+Minimal `src/app/pages/page-home/home.component.ts`:
+
+```ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BaseStorageComponent, TranslatePipe } from '@asor-studio/asor-core';
+import { IAppSystemStatus } from '../../config/interfaces/app-state.interfaces';
+import { SampleWidgetMolecule } from '../../molecules/molecule-sample-widget/sample-widget.molecule';
+
+@Component({
+  selector: 'app-home-page',
+  standalone: true,
+  imports: [CommonModule, TranslatePipe, SampleWidgetMolecule],
+  template: `
+    <h1>{{ 'TITLE' | translate }}</h1>
+    <app-sample-widget />
+  `,
+})
+export class PageHomeComponent extends BaseStorageComponent<IAppSystemStatus> {
+  static override readonly className = 'PageHomeComponent';
+}
+```
+
+Create `src/app/app.routes.ts`:
+
+```ts
+import { Routes } from '@angular/router';
+import { IAsorRoute } from '@asor-studio/asor-core';
+import { AppConfig } from './config/app.config';
+import { AppStateConnectionSystem } from './config/app-state.config';
+import { PageHomeComponent } from './pages/page-home/home.component';
+import { SampleWidgetMolecule } from './molecules/molecule-sample-widget/sample-widget.molecule';
+
+export const routes: Routes = [
+  { path: '', redirectTo: AppConfig.Route.HOME, pathMatch: 'full' },
+  {
+    path: AppConfig.Route.HOME,
+    component: PageHomeComponent,
+    data: {
+      I18nPath: [AppConfig.TranslationUrl.HOME],
+      ConnectDataSet: AppStateConnectionSystem,
+      Molecules: [
+        {
+          Molecule: SampleWidgetMolecule,
+          I18nPath: [AppConfig.TranslationUrl.SAMPLE_WIDGET],
+        },
+      ],
+    } as IAsorRoute,
+  },
+];
+```
+
+### Step 7. Add the root widget and translations
+
+In the root component template, keep both:
+
+```html
+<router-outlet />
+<asor-core-widget mode="on" />
+```
+
+If the root component is standalone, import `AsorWidgetComponent` from `@asor-studio/asor-core`.
+
+Then create:
+
+- `assets/i18n/app/page-home/en.json`
+- `assets/i18n/app/page-home/it.json`
+- `assets/i18n/app/molecule-sample-widget/en.json`
+- `assets/i18n/app/molecule-sample-widget/it.json`
+
+Example `en.json`:
+
+```json
+{
+  "TITLE": "Home"
+}
+```
+
+With these files in place, the project has the same minimum moving parts used by `asor setup`: config registration, state initialization, route metadata, i18n namespaces, and the ASOR widget overlay.
 
 ---
 
-## 5. Extending Base Configurations <a id="config-extension"></a>
+## 7. Files to Review First <a id="config-review"></a>
 
-`asor-core` provides base configuration classes that **MUST** be extended to adapt them to project specifications.
+After setup, these are the main files to edit.
 
-### Constants and Routes (`ConfigConst`)
+### `src/app/app.config.ts`
 
-Create a class (e.g., `WikiConfig`) that extends `ConfigConst` to define routes and translation paths.
+This file is already scaffolded with the ASOR runtime providers. It includes:
 
-```typescript
-// src/app/config/wiki.config.ts
-import { ConfigConst } from '@asor-studio/asor-core';
+- `APP_INITIALIZER` wired to `initializeAsorCoreApp`
+- `provideRouter(routes, withComponentInputBinding())`
+- `provideHttpClient(withInterceptorsFromDi())`
+- `MockHttpInterceptor`, `CacheInterceptor`, and `ErrorInterceptor`
+- `APP_BASE_HREF` set to the selected `baseHref`
 
-export class WikiConfig extends ConfigConst {
-    // Route Definitions
-    protected static override _routeExtensions = {
-        HOME: 'home',
-        DASHBOARD: 'dashboard'
-    };
+### `src/app/config/<prefix>.config.ts`
 
-    // Translation Path Definitions
-    protected static override _translationUrlExtensions = {
-        HOME: '/i18n/home',
-        DASHBOARD: '/i18n/dashboard'
-    };
+This is the main constants file generated from the chosen prefix. Use it to review or extend:
 
-    // Exposing typed getters (optional but recommended)
-    static override get Route() { return { ...super.Route, ...this._routeExtensions }; }
-    static override get TranslationUrl() { return { ...super.TranslationUrl, ...this._translationUrlExtensions }; }
+- API base path
+- routes
+- i18n namespaces
+- auth checks
+- cache namespaces
+- site URLs
 
-    // Mandatory for initializing asor-core library constants
-    static {
-        ConfigConst.SetConfiguration(WikiConfig);
-    }
-}
+### `src/app/config/<prefix>-asor.config.ts`
+
+This file contains the bootstrap logic executed by `APP_INITIALIZER`. Out of the box it:
+
+- configures ASOR log levels
+- initializes `<prefix>.config.ts` and `<prefix>-cache.config.ts`
+- registers the example `PageHomeComponent`
+- initializes `StateService`
+- creates the default global dataset from `<prefix>-state.config.ts`
+
+### `src/app/app.routes.ts`
+
+The generated routes file already includes:
+
+- redirect from `''` to `Route.HOME`
+- the `home` page route
+- route `data` with i18n, dataset connection, and component slots
+- the sample widget registered inside `Molecules`
+
+---
+
+## 8. Recommended First Edits After Setup <a id="config-next-steps"></a>
+
+These are the first changes usually required in a real project:
+
+1. Edit `src/app/config/<prefix>-asor.config.ts` and replace the example bootstrap with your real datasets, controllers, and logging choices
+2. Review `src/app/config/<prefix>.config.ts` and update routes, API paths, and translation namespaces
+3. Replace or extend `src/app/config/<prefix>-state.config.ts` and `src/app/config/interfaces/<prefix>-state.interfaces.ts`
+4. Clean up `src/app/app.routes.ts`, removing example placeholders you do not want to keep
+5. Update the sample `page-home` and `molecule-sample-widget` scaffold, or replace them with your own generated components
+
+---
+
+## 9. Continue with Generators <a id="config-generators"></a>
+
+Once setup is complete, you can scaffold additional building blocks:
+
+```bash
+asor -g -page user-profile
+asor -g -molecule menu-bar
+asor -g -atom status-badge
+asor -g -organism dashboard-shell
 ```
 
-### Cache Configuration (`ConfigCache`)
+Useful flags:
 
-If necessary, extend `ConfigCache` to define custom caching rules.
+- `-full`: enables route, i18n, and config injection
+- `-storage`: generates the storage-aware base class variant
+- `-in <page>`: injects atoms, molecules, or organisms into a specific page when used together with `-full`
 
-```typescript
-// src/app/config/wiki.cache.config.ts
-import { ConfigCache, IPath, ConfigConst } from '@asor-studio/asor-core';
+To see the full command list:
 
-export class WikiCacheConfig extends ConfigCache {
-    protected static override _pathsExtensions: IPath[] = [
-        {
-            pathValue: '/api/v1/secure-data',
-            isPersistent: true,
-            resctrictRoute: ConfigConst.Route.NONE,
-            reqPayloadCache: false,
-            clearOn: []
-        }
-    ];
-
-    // Mandatory for initializing asor-core library constants
-    static {
-        ConfigCache.SetConfiguration(WikiCacheConfig);
-    }
-}
+```bash
+asor help
 ```

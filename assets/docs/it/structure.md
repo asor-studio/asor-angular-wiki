@@ -1,88 +1,110 @@
 # Struttura del Progetto e Configurazione
 
-In questa sezione analizzeremo come costruire e configurare un progetto che utilizza la libreria `asor-core`. Partiremo dall'analisi della struttura delle cartelle e delle convenzioni di nomenclatura.
+Questa pagina non va letta come un semplice elenco di cartelle. In `asor-core`, la struttura del progetto e` parte dell'architettura: aiuta il team a capire subito dove vive la logica, dove sta la UI riusabile e in che modo una route mette insieme traduzioni, stato e componenti.
 
+L'idea di fondo e` semplice: una codebase ordinata non e` solo piu` bella da vedere, ma diventa anche piu` stabile nel tempo. Per questo ASOR adotta una struttura semantica ispirata ad Atomic Design, affiancata da un routing ricco di metadati.
+
+---
 
 ## Scaffolding e Naming Convention <a id="structure-scaffolding"></a>
 
-La struttura del progetto `src/app` è organizzata semanticamente per favorire scalabilità e manutenibilità, seguendo rigorose convenzioni di nomenclatura per distinguere chiaramente i ruoli dei vari artefatti (Pagine, Componenti, Molecole).
+Quando lavori dentro `src/app`, non stai soltanto creando file Angular: stai dichiarando il ruolo architetturale di ogni blocco.
+
+La suddivisione consigliata e` questa:
+
+| Cartella | Ruolo | Quando usarla |
+|---|---|---|
+| `pages/` | Viste raggiungibili via route | Quando il blocco rappresenta una destinazione vera dell'app |
+| `components/` | Container smart o blocchi di orchestrazione | Quando serve coordinare logica, stato o piu` sezioni senza modellarle come organismo |
+| `organisms/` | Sezioni UI ampie e riusabili | Quando una parte di interfaccia compone molecole e/o atomi in una sezione riconoscibile |
+| `molecules/` | Blocchi UI funzionali medi | Quando hai un gruppo di elementi che lavorano insieme come unita` |
+| `atoms/` | Elementi UI minimi e riusabili | Quando il blocco e` piccolo ma ha identita` autonoma |
+| `config/` | Configurazione globale | Quando il file governa route, costanti, cache, stato o bootstrap |
 
 ### Struttura delle Cartelle (`src/app`)
-
-La root dell'applicazione è suddivisa nelle seguenti macro-aree:
-
-*   📂 **`pages/`**: Contiene le pagine dell'applicazione (viste intere raggiungibili via routing).
-*   📂 **`components/`**: Contiene i componenti "smart" o organismi complessi riutilizzabili.
-*   📂 **`molecules/`**: Contiene le molecole, ovvero componenti UI riutilizzabili e funzionali.
-*   📂 **`atoms/`**: Contiene gli atomi, ovvero componenti UI riutilizzabili e base.
-*   📂 **`config/`**: Contiene i file di configurazione globali (rotte, costanti, cache).
 
 ```text
 src/
 └── app/
-    ├── pages/                     # Container delle pagine (Viste)
-    │   ├── page-home/
-    │   │   ├── home.component.ts  # Logica della pagina
-    │   │   ├── home.component.html
-    │   │   └── ...
-    │   └── ...
-    ├── components/                # Componenti Smart / Organismi
-    │   ├── component-placeholder/
-    │   │   ├── placeholder.component.ts
-    │   │   └── ...
-    │   └── ...
-    ├── molecules/                 # Componenti UI Riutilizzabili
-    │   ├── molecule-menu/
-    │   │   ├── menu.molecule.ts   # Nota il suffisso .molecule.ts
-    │   │   └── ...
-    │   └── ...
-    └── config/                    # Configurazioni Globali
-        ├── wiki.config.ts
-        └── ...
+    ├── pages/
+    │   └── page-home/
+    │       ├── home.component.ts
+    │       └── home.component.html
+    ├── components/
+    │   └── component-dashboard-container/
+    │       └── dashboard-container.component.ts
+    ├── organisms/
+    │   └── organism-dashboard-shell/
+    │       └── dashboard-shell.organism.ts
+    ├── molecules/
+    │   └── molecule-menu/
+    │       └── menu.molecule.ts
+    ├── atoms/
+    │   └── atom-status-badge/
+    │       └── status-badge.atom.ts
+    └── config/
+        ├── app.config.ts
+        └── interfaces/
 ```
 
-### Convenzioni di Nomenclatura
+### Convenzioni di nomenclatura
 
-Per garantire coerenza e immediata riconoscibilità, ogni tipo di artefatto segue uno specifico pattern di naming per cartelle, file e classi.
+Le convenzioni non sono decorative: servono a rendere immediato il riconoscimento del ruolo di ogni artefatto.
 
-#### 1. Pagine (`pages/`)
+| Tipo | Cartella | File | Classe | Selector |
+|---|---|---|---|---|
+| Pagina | `page-<name>` | `<name>.component.ts` | `Page<Name>Component` | `asor-<name>` |
+| Component | `component-<name>` | `<name>.component.ts` | `<Name>Component` | `asor-<name>` |
+| Organism | `organism-<name>` | `<name>.organism.ts` | `<Name>Organism` | `asor-<name>` |
+| Molecule | `molecule-<name>` | `<name>.molecule.ts` | `<Name>Molecule` | `asor-<name>` |
+| Atom | `atom-<name>` | `<name>.atom.ts` | `<Name>Atom` | `asor-<name>` |
 
-Le pagine rappresentano le viste principali e fungono da contenitori per componenti e molecole.
+### Components vs Organisms
 
-*   **Cartella**: Prefisso `page-` (es. `page-storage`, `page-home`).
-*   **File**: `<name>.component.ts` (es. `storage.component.ts`).
-*   **Classe**: Prefisso `Page` + PascalCase (es. `PageStorageComponent`).
-*   **Selettore**: Prefisso `asor-` (es. `asor-storage`).
+Questo e` uno dei punti che genera piu` confusione, quindi vale la pena chiarirlo bene.
 
-#### 2. Componenti (`components/`)
+Un `component` in ASOR non e` semplicemente "un blocco grosso". E` spesso un contenitore smart: coordina flussi, logica di business, relazioni con lo stato o con la route. Può essere visivamente importante, ma il suo valore sta soprattutto nell'orchestrazione.
 
-I componenti sono blocchi costruttivi complessi, spesso contenenti logica di business o coordinando più molecole.
+Un `organism`, invece, e` un blocco di Atomic Design. Rappresenta una sezione UI ampia e riusabile, costruita mettendo insieme molecole e atomi in un pezzo di interfaccia riconoscibile: un header complesso, una sidebar, una dashboard shell, una sezione profilo.
 
-*   **Cartella**: Prefisso `component-` (es. `component-placeholder`).
-*   **File**: `<name>.component.ts` (es. `placeholder.component.ts`).
-*   **Classe**: PascalCase + Suffix `Component` (es. `PlaceholderComponent`).
-*   **Selettore**: Prefisso `asor-` (es. `asor-placeholder`).
+Usa questa regola pratica:
 
-#### 3. Molecole (`molecules/`)
-
-Le molecole sono unità funzionali riutilizzabili (es. card, menu, form).
-
-*   **Cartella**: Prefisso `molecule-` (es. `molecule-menu`).
-*   **File**: `<name>.molecule.ts` (Nota il suffisso `.molecule.ts`).
-*   **Classe**: PascalCase + Suffix `Molecule` (es. `MenuMolecule`).
-*   **Selettore**: Prefisso `asor-` (es. `asor-menu`).
+| Se il blocco... | Allora scegli |
+|---|---|
+| e` una sezione UI riusabile e strutturale | `organism` |
+| e` un contenitore smart che coordina logica o piu` blocchi | `component` |
+| e` una destinazione di navigazione | `page` |
 
 ---
 
 ## Configurazione delle Rotte (`IAsorRoute`) <a id="structure-routes"></a>
 
+In ASOR, il file `app.routes.ts` non si limita a collegare un path a un componente. La parte davvero importante e` l'oggetto `data`, perche` e` li` che la route dichiara tutto cio` che serve al runtime:
 
-Nel file `src/app/app.routes.ts`, le rotte vengono definite utilizzando l'interfaccia `IAsorRoute`. La parte più importante di questa configurazione è l'oggetto `data`, che permette di passare informazioni essenziali per l'inizializzazione dei componenti, la gestione dello stato e l'internazionalizzazione.
+- traduzioni da caricare
+- eventuale controllo di accesso
+- dataset da creare
+- dataset da collegare
+- blocchi UI da registrare
 
-Ecco un esempio di configurazione per la rotta `STORAGE`:
+In altre parole, la route diventa il punto di incontro tra navigazione, stato e UI.
+
+### Cosa puo` contenere `IAsorRoute`
+
+| Campo | Significato | Quando serve |
+|---|---|---|
+| `I18nPath` | Namespace di traduzione da caricare | Sempre, per la pagina corrente |
+| `AuthCheck` | Codice di autorizzazione lato backend | Se la route e` protetta |
+| `CreateDataSet` | Dataset creato all'ingresso della route | Se la pagina apre uno stato contestuale |
+| `ConnectDataSet` | Connessione dataset di pagina | Se la pagina e` storage-aware |
+| `Components` | Blocchi `BaseComponent` / `BaseStorageComponent` | Se la route usa componenti registrabili ASOR |
+| `Organisms` | Blocchi `BaseOrganism` / `BaseStorageOrganism` | Se la route usa organismi registrabili |
+| `Molecules` | Blocchi `BaseMolecule` / `BaseStorageMolecule` | Se la route usa molecole registrabili |
+| `Atoms` | Blocchi `BaseAtom` / `BaseStorageAtom` | Se la route usa atomi registrabili |
+
+### Esempio
 
 ```typescript
-// src/app/app.routes.ts
 {
     path: WikiConfig.Route.STORAGE,
     component: PageStorageComponent,
@@ -91,460 +113,301 @@ Ecco un esempio di configurazione per la rotta `STORAGE`:
         AuthCheck: WikiConfig.AuthCheck.STORAGE,
         CreateDataSet: ExampleCreateDataSet,
         Components: [ ... ],
-        Molecules: [ ... ]
+        Organisms: [ ... ],
+        Molecules: [ ... ],
+        Atoms: [ ... ]
     } as IAsorRoute
-},
+}
 ```
+
+### Regola importante
+
+Ogni classe registrata nella route deve stare nell'array coerente con la sua classe base:
+
+| Classe base | Array route corretto |
+|---|---|
+| `BaseComponent` / `BaseStorageComponent` | `Components` |
+| `BaseOrganism` / `BaseStorageOrganism` | `Organisms` |
+| `BaseMolecule` / `BaseStorageMolecule` | `Molecules` |
+| `BaseAtom` / `BaseStorageAtom` | `Atoms` |
+
+Registrare un organismo dentro `Components`, o un atom dentro `Molecules`, rende piu` difficile capire il progetto e puo` compromettere il matching corretto del runtime.
 
 ---
 
 ## Sistema di Autenticazione (`AuthCheck`) <a id="structure-auth"></a>
 
-La proprietà `AuthCheck` è un parametro opzionale dell'interfaccia `IAsorRoute` che abilita una verifica di sicurezza lato server prima di consentire l'accesso alla rotta.
+`AuthCheck` e` la chiave che permette a una route di dichiarare: "prima di entrare qui, verifica che il backend confermi questo permesso".
+
+Dal punto di vista di chi sviluppa la pagina, e` un approccio molto pulito: la route espone l'intenzione, mentre la guard si occupa della parte tecnica.
+
+### Flusso di esecuzione
+
+| Passo | Cosa succede |
+|---|---|
+| 1. Validazione | La guard controlla se `AuthCheck` e` presente |
+| 2. Chiamata API | Viene invocato `auth/flow/{code}` |
+| 3. Risposta | Il backend restituisce un oggetto `IAuth` |
+| 4. Decisione | La guard consente o blocca la navigazione |
+
+### Contratto atteso dal frontend
+
+| Tipo | Struttura |
+|---|---|
+| `IAuth` | `{ authorized: AuthStatus }` |
+| `AuthStatus.Ok` | Accesso consentito |
+| `AuthStatus.NotAllow` | Accesso negato |
+| `AuthStatus.Expired` | Sessione scaduta |
+
+### Comportamento della guard
+
+| Stato | Esito |
+|---|---|
+| `ok` | Entra nella route |
+| `na` | Redirect a `ConfigConst.Url.UNAUTHORIZED` |
+| `ex` | Redirect a `ConfigConst.Url.LOGIN` |
+
+Esempio di route:
 
 ```typescript
-// Esempio configurazione rotta
 {
     path: 'admin-panel',
     component: AdminComponent,
     data: {
-        AuthCheck: 'ADMIN_ACCESS_CODE', // Codice univoco di controllo
+        AuthCheck: 'ADMIN_ACCESS_CODE',
     } as IAsorRoute
 }
-```
-
-### Flusso di Esecuzione
-Quando il Router Angular tenta di navigare verso una rotta protetta da `AuthCheck`, la `AuthGuard` intercetta la navigazione ed esegue i seguenti passaggi:
-
-1.  **Validazione**: Verifica se la proprietà `AuthCheck` è valorizzata.
-2.  **Chiamata API**: Esegue una richiesta HTTP GET all'endpoint configurato nel backend, appendendo il codice di autorizzazione.
-    *   Endpoint: `auth/flow/{code}`
-    *   Esempio URL: `https://api.example.com/api/v1/auth/flow/ADMIN_ACCESS_CODE`
-3.  **Analisi Risposta**: Attende un oggetto JSON conforme all'interfaccia `IAuth`.
-4.  **Decisione**:
-    *   Se l'utente è autorizzato (`ok`), la navigazione procede.
-    *   Se non autorizzato o sessione scaduta, viene eseguito un reindirizzamento.
-
-### Interfacce e Definizioni
-
-Il frontend si aspetta una risposta strutturata secondo le seguenti definizioni (presenti in `asor-core`):
-
-**Interfaccia Risposta (`IAuth`)**
-```typescript
-export interface IAuth {
-    /** Stato dell'autorizzazione */
-    authorized: AuthStatus;
-}
-```
-
-**Enum Stati Autorizzazione (`AuthStatus`)**
-```typescript
-export enum AuthStatus {
-    /** Autorizzazione concessa */
-    Ok = 'ok',
-    
-    /** Autorizzazione negata (utente loggato ma senza permessi) */
-    NotAllow = 'na',
-    
-    /** Sessione scaduta o token non valido */
-    Expired = 'ex'
-}
-```
-
-### Comportamento della Guard (`AuthGuard`)
-
-La `AuthGuard` gestisce i vari stati di risposta applicando logiche di reindirizzamento specifiche:
-
-*   **`AuthStatus.Ok` (`'ok'`)**: `return true` (Navigazione consentita).
-*   **`AuthStatus.NotAllow` (`'na'`)**: `return false` -> Redirect a **Non Autorizzato** (`ConfigConst.Url.UNAUTHORIZED`).
-*   **`AuthStatus.Expired` (`'ex'`)**: `return false` -> Redirect a **Login** (`ConfigConst.Url.LOGIN`).
-
-### Esempio Implementazione Backend (Node.js / Express)
-
-```typescript
-// Esempio endpoint Express.js
-app.get('/api/v1/auth/flow/:code', (req, res) => {
-    const authCode = req.params.code; // es. 'ADMIN_ACCESS_CODE'
-    const userSession = req.session.user; 
-
-    // 1. Verifica Sessione
-    if (!userSession || isSessionExpired(userSession)) {
-        return res.json({ authorized: 'ex' });
-    }
-
-    // 2. Verifica Permessi
-    const hasPermission = checkUserPermission(userSession, authCode);
-    return res.json({ authorized: hasPermission ? 'ok' : 'na' });
-});
 ```
 
 ---
 
 ## Sistema di Traduzioni (`I18nPath`) <a id="structure-i18n"></a>
 
-Il sistema di traduzioni di `asor-core` è basato sul caricamento dinamico di file JSON in base alla rotta e alla lingua corrente.
+Le traduzioni in `asor-core` si basano su un principio semplice: ogni route dichiara quali namespace deve caricare, e ogni componente registrato eredita i percorsi che gli servono.
 
-### Configurazione (`I18nPath`)
+Questo evita due problemi frequenti:
 
-La proprietà `I18nPath` in `IAsorRoute` è un array di stringhe che definisce da quali moduli caricare le traduzioni per la pagina corrente.
+- traduzioni sparse in punti difficili da rintracciare
+- componenti che dipendono da file JSON caricati "a mano"
 
-```typescript
-I18nPath: [WikiConfig.TranslationUrl.STORAGE, WikiConfig.TranslationUrl.SHARED]
-```
+### Struttura del sistema
 
-#### Definizione dei Percorsi
-I valori (es. `/asor/storage`) sono definiti nella classe di configurazione del progetto (`WikiConfig`), estendendo `ConfigConst`.
+| Elemento | Ruolo |
+|---|---|
+| `I18nPath` | Elenca i namespace necessari alla route |
+| `TranslationUrl` | Centralizza i percorsi nella config di progetto |
+| File JSON | Contengono le chiavi tradotte |
+| `TranslatePipe` | Recupera le traduzioni nel template o nel TS |
 
-```typescript
-// src/app/config/wiki.config.ts
-export class WikiConfig extends ConfigConst {
-    protected static override _translationUrlExtensions = {
-        STORAGE: '/asor/storage', 
-        SHARED: '/asor/shared',
-    };
-    // ...
-}
-```
+### Dove vivono i file
 
-### Struttura e Contenuto dei File
+I file di traduzione devono stare in:
 
-I file di traduzione devono trovarsi in `public/assets/i18n/<path>/[lang].json`.
+`public/assets/i18n/<path>/<lang>.json`
 
-*   **Path**: Corrisponde al valore definito in `WikiConfig` (es. `/asor/storage`).
-*   **Lang**: Codice lingua (es. `it`, `en`).
-*   **Contenuto**: **Mappa piatta** (Flat Key-Value). Oggetti annidati **NON** sono supportati.
+oppure, nei progetti che non usano `public`, in:
 
-Esempio `public/assets/i18n/asor/storage/it.json`:
-```json
-{
-    "TITLE": "Benvenuto",
-    "SUBTITLE": "Gestione Storage",
-    "BUTTON_SAVE": "Salva"
-}
-```
+`src/assets/i18n/<path>/<lang>.json`
 
-### Configurazione della Lingua
+### Regola sul contenuto
 
-La lingua di default (`DefaultLanguage`) è definita in `ConfigConst` (default: 'it'). Per modificarla, fare override in `WikiConfig`:
+I file JSON devono essere piatti.
 
-```typescript
-// src/app/config/wiki.config.ts
-export class WikiConfig extends ConfigConst {
-    protected static override _translationUrlExtensions = {
-        DefaultLanguage: 'en', // Override
-        // ...
-    };
+| Corretto | Non supportato |
+|---|---|
+| `{ "TITLE": "Benvenuto" }` | `{ "page": { "title": "Benvenuto" } }` |
 
-    static override get TranslationUrl() {
-        return { ...super.TranslationUrl, ...this._translationUrlExtensions };
-    }
-}
-```
+### Utilizzo
 
-### Utilizzo delle Traduzioni
+| Contesto | Strumento |
+|---|---|
+| Template HTML | `TranslatePipe` |
+| Codice TypeScript | `TranslatePipe.transform()` |
 
-#### 1. Nei Template HTML (`TranslatePipe`)
-Importare `TranslatePipe` nel componente standalone e usare la pipe `| translate`.
+Esempio:
 
 ```html
 <h1>{{ 'TITLE' | translate }}</h1>
-<p>{{ 'WELCOME' | translate : params }}</p> <!-- params = { name: 'Mario' } -->
 ```
-
-#### 2. Nel Codice TypeScript
-Iniettare `TranslatePipe` e usare il metodo `transform()`.
 
 ```typescript
-import { TranslatePipe } from '@asor-studio/asor-core';
-
-@Component({ ... })
-export class MyComponent {
-    private translate = inject(TranslatePipe);
-
-    showAlert() {
-        const msg = this.translate.transform('ERROR_MSG');
-        alert(msg);
-    }
-}
+const msg = this.translate.transform('ERROR_MSG');
 ```
+
+### Nota importante sui binding verso componenti figli
+
+Quando la traduzione viene usata direttamente nel template del componente corrente, `| translate` puo` ricavare il namespace dal contesto ASOR associato alla view.
+
+Nei binding padre-figlio, invece, questo contesto non e` sempre sufficiente. Un caso tipico e` il passaggio di una label gia tradotta a un componente figlio:
+
+```html
+<app-settings-color-swatch
+    [label]="'SETTINGS_APPEARANCE_PANEL.COLOR_1' | translate:I18nPath"
+    [previewColor]="'#f5dece'"
+    [active]="true"
+></app-settings-color-swatch>
+```
+
+In questo scenario e` consigliato passare esplicitamente `I18nPath` alla pipe. In questo modo la traduzione resta agganciata al namespace del padre e non dipende dal contesto runtime con cui Angular risolve il binding del figlio.
 
 ---
 
-## Sistema Componenti e Molecole <a id="structure-components"></a>
+## Sistema UI: Components, Organisms, Molecules e Atoms <a id="structure-components"></a>
 
-In `asor-core`, l'architettura UI segue il pattern **Atomic Design**, distinguendo chiaramente tra **Components** (spesso corrispondenti a Organismi o Intere Pagine) e **Molecules** (componenti riutilizzabili più piccoli).
+ASOR usa Atomic Design ma lascia spazio anche a blocchi smart di alto livello. Per questo conviene pensare ai quattro livelli UI come a una gerarchia con ruoli diversi.
 
-Tutti i componenti e le molecole utilizzati in una pagina **DEVONO** essere registrati nella configurazione della rotta per funzionare correttamente (es. per il caricamento delle traduzioni o la gestione dello stato).
+| Livello | Classe base | Scopo |
+|---|---|---|
+| Component | `BaseComponent` | Container smart, pagina, coordinamento di logica e lifecycle |
+| Organism | `BaseOrganism` | Sezione UI ampia e riusabile |
+| Molecule | `BaseMolecule` | Blocco funzionale medio |
+| Atom | `BaseAtom` | Elemento UI minimo riusabile |
 
-### Differenze Concettuali
+Le versioni storage-aware seguono la stessa logica:
 
-#### 1. Components (`BaseComponent`)
-Rappresentano i blocchi di alto livello dell'applicazione, come le Pagine (`PageStorageComponent`) o macro-sezioni complesse (`ExampleStorageComponent`).
-*   **Ruolo**: Gestire la logica di business principale, l'inizializzazione della pagina e coordinare le molecole.
-*   **Classe Base**: Estendono `BaseComponent`.
-*   **Lifecycle**: Gestiscono automaticamente i ciclo di vita Angular (`ngOnInit`, `ngOnDestroy`) e Ionic (`ionViewWillEnter`, `ionViewWillLeave`).
+| Livello | Variante storage-aware |
+|---|---|
+| Component | `BaseStorageComponent<T>` |
+| Organism | `BaseStorageOrganism<T>` |
+| Molecule | `BaseStorageMolecule<T>` |
+| Atom | `BaseStorageAtom<T>` |
 
-#### 2. Molecules (`BaseMolecule`)
-Rappresentano componenti UI funzionali e riutilizzabili (es. una card utente, un form di ricerca, una finestra di dialogo).
-*   **Ruolo**: Fornire funzionalità specifiche e isolate. Sono spesso contenute all'interno di un Component.
-*   **Classe Base**: Estendono `BaseMolecule`.
-*   **Lifecycle**: Ereditano il ciclo di vita dal Component padre (se collegati correttamente tramite `@ViewChild`).
+### `className`: perche` e` obbligatorio
 
-### Configurazione (`Components` e `Molecules`)
-
-Nel file `app.routes.ts`, ogni rotta deve dichiarare quali Componenti e Molecole utilizza nell'oggetto `data`.
+Ogni classe registrata deve dichiarare:
 
 ```typescript
-// src/app/app.routes.ts
-data: {
-    // ...
-    Components: [
-        {
-            Component: ExampleStorageComponent, // Classe del componente
-            I18nPath: [WikiConfig.TranslationUrl.STORAGE], // Traduzioni specifiche
-            ConnectDataSet: ExampleConnectDataSet // Connessione stato (opzionale)
-        }
-    ],
-    Molecules: [
-        {
-            Molecule: ExampleStorageMolecule, // Classe della molecola
-            I18nPath: [WikiConfig.TranslationUrl.STORAGE], // Traduzioni specifiche
-            ConnectDataSet: ExampleConnectDataSet // Connessione stato (opzionale)
-        }
-    ]
-} as IAsorRoute
+public static override readonly className = 'MyClassName';
 ```
 
-### Implementazione nelle Classi
+Questo valore serve per due motivi fondamentali:
 
-Per beneficiare di queste funzionalità, le classi devono estendere le rispettive classi base.
+| Motivo | Perche` conta |
+|---|---|
+| Matching di route | Il runtime trova la configurazione giusta confrontando il `className` |
+| Logging | I log restano leggibili anche in build minificate |
 
-#### Esempio Componente
-```typescript
-import { BaseComponent } from '@asor-studio/asor-core';
+### Lifecycle
 
-@Component({ ... })
-export class MyPage extends BaseComponent {
-    // I18nPath viene popolato automaticamente dal routing
-    
-    // Implementazione Obbligatoria
-    override baseCompViewEnter() { }
-    override baseCompViewLeave() { }
-}
-```
+Ogni livello ha hook coerenti con il proprio ruolo:
 
-#### Esempio Molecola
-```typescript
-import { BaseMolecule } from '@asor-studio/asor-core';
+| Classe base | Hook principali |
+|---|---|
+| `BaseComponent` | `baseCompViewEnter`, `baseCompViewLeave` |
+| `BaseOrganism` | `baseOrganismViewWillEnter`, `baseOrganismViewWillLeave` |
+| `BaseMolecule` | `baseMoleculeViewWillEnter`, `baseMoleculeViewWillLeave` |
+| `BaseAtom` | `baseAtomViewWillEnter`, `baseAtomViewWillLeave` |
 
-@Component({ ... })
-export class MyCard extends BaseMolecule {
-    // Recupera la configurazione specifica per 'MyCard' dal routing
-    
-    // Implementazione Obbligatoria
-    override baseCompViewEnter() { }
-    override baseCompViewLeave() { }
-}
-```
+### Gestione automatica dei figli con `#ChildRef`
 
-> **Nota Fondamentale**: Se un Componente o una Molecola non viene registrato nell'array `Components` o `Molecules` della rotta, `asor-core` non sarà in grado di iniettare le configurazioni corrette (come `I18nPath`), causando errori nel caricamento delle traduzioni o dello stato.
+`BaseComponent` puo` propagare automaticamente il proprio lifecycle alle molecole figlie. Questo rende i template piu` puliti e riduce il bisogno di `ViewChild` manuali.
 
-### Gestione Automatica del Ciclo di Vita (`#ChildRef`)
-
-`BaseComponent` offre un meccanismo potente per gestire automaticamente il ciclo di vita delle molecole figlie, propagando gli eventi `baseCompViewEnter` e `baseCompViewLeave`.
-
-Per attivare questo automatismo, è sufficiente assegnare la template reference variable `#ChildRef` alle molecole nel template HTML del componente.
-
-#### Esempio Utilizzo Singolo o Multiplo
-È possibile marcare una o più molecole con `#ChildRef`. Il componente padre le rileverà automaticamente tutte e invocherà i loro metodi di inizializzazione/distruzione.
+Esempio:
 
 ```html
-<!-- Master Page Template -->
-
-<!-- ... -->
-
-<!-- Molecole Multiple: Tutte riceveranno gli eventi del ciclo di vita -->
 <asor-header #ChildRef></asor-header>
 <asor-sidebar #ChildRef></asor-sidebar>
-
-<!-- ... -->
 ```
 
-In questo scenario:
-1.  Quando `MyPage` (BaseComponent) entra in view (`ngOnInit` / `ionViewWillEnter`), chiama automaticamente `baseCompViewEnter` su **TUTTE** le istanze marcate con `#ChildRef`.
-2.  Quando `MyPage` esce (`ngOnDestroy` / `ionViewWillLeave`), chiama `baseCompViewLeave` su tutte le istanze.
-
-> Questo elimina la necessità di gestire manualmente `ViewChild` e chiamare i metodi di init/destroy per ogni sotto-componente.
-
-
+Quando il componente padre entra o esce, tutte le molecole marcate con `#ChildRef` ricevono automaticamente il relativo hook.
 
 ---
 
 ## Sistema di Cache <a id="structure-cache"></a>
 
-`asor-core` include un sistema di caching HTTP configurabile e granulare, gestito tramite un `HTTP_INTERCEPTOR` e una classe di configurazione estendibile.
+La cache in `asor-core` non e` un accessorio: e` uno strumento di prestazione e di stabilita` del traffico HTTP.
 
-### Configurazione (`ConfigCache`)
+Il punto chiave e` `ConfigCache`, cioe` la configurazione centralizzata che dice al runtime:
 
-Il comportamento della cache è definito da regole (`IPath`) specificate nella classe `ConfigCache`. Ogni regola determina come e quando una richiesta HTTP deve essere cachata.
+- cosa tenere in cache
+- per quanto tempo
+- in quale storage
+- quando invalidare una voce
+- se la route corrente deve influenzare il caching
 
-#### Proprietà di Configurazione (`IPath`)
+### Come leggere una regola di cache
 
-Le regole sono oggetti che rispettano l'interfaccia `IPath`. Ecco il significato di ogni proprietà:
+| Proprietà | Significato pratico |
+|---|---|
+| `pathValue` | Quale endpoint o pattern URL intercettare |
+| `persistenceType` | Dove e per quanto tempo tenere la cache |
+| `encriptType` | Se e come cifrare i dati cacheati |
+| `reqPayloadCache` | Se il body deve entrare nella chiave di cache |
+| `resctrictRoute` | Se la cache vale solo dentro una route specifica |
+| `clearOn` | Quali chiamate invalidano quella cache |
+| `callBackCacheKey` | Chiave personalizzata per casi avanzati |
 
-*   **`persistenceType`** (`AsorGlobalEnum.CacheType`): Il tipo di persistenza della cache.
-    *   `AsorGlobalEnum.CacheType.VOLATILE` (`'volatile'`): La cache è in memoria (RAM) e viene persa al refresh o alla chiusura del tab.
-    *   `AsorGlobalEnum.CacheType.SESSION` (`'session'`): La cache sopravvive al reload della pagina (salvata nel `sessionStorage` del browser).
-    *   `AsorGlobalEnum.CacheType.LOCAL` (`'local'`): La cache viene salvata nel `localStorage` e persiste tra le sessioni.
-*   **`encriptType`** (`AsorGlobalEnum.CacheEncriptType`): Il tipo di crittografia da utilizzare.
-    *   `AsorGlobalEnum.CacheEncriptType.NONE` (`'NONE'`): Nessuna crittografia.
-    *   `AsorGlobalEnum.CacheEncriptType.AUTO` (`'AUTO'`): Crittografia rilevata automaticamente.
-    *   `AsorGlobalEnum.CacheEncriptType.CUSTOM` (`'CUSTOM'`): Tipo di crittografia personalizzato.
-*   **`pathValue`** (`string`): L'URL (o parte di esso) della richiesta HTTP da intercettare. Se la richiesta contiene questa stringa, la regola viene applicata.
-*   **`resctrictRoute`** (`string`): Limita la regola a una specifica rotta dell'applicazione.
-    *   `ConfigConst.Route.NONE` o `''`: La regola vale per tutte le rotte.
-    *   Specificando una rotta (es. `/dashboard`), la cache si attiva solo se l'utente si trova in quella pagina.
-*   **`reqPayloadCache`** (`boolean`):
-    *   `true`: Include il body della richiesta (payload) nella chiave di cache. Utile per le `POST` di ricerca dove lo stesso endpoint restituisce dati diversi in base ai filtri.
-    *   `false`: Ignora il payload. La chiave di cache è basata solo sull'URL.
-*   **`clearOn`** (`string[]`): Elenco di endpoint che, se chiamati (solitamente con metodi non-GET come `POST`, `PUT`, `DELETE`), invalidano questa cache.
-    *   Esempio: Una chiamata a `/api/users/update` può essere configurata per pulire la cache di `/api/users/list`.
-*   **`callBackCacheKey`** (opzionale `() => string`): Una funzione di callback per generare una chiave di cache personalizzata per la richiesta.
+### Tipi di persistenza
 
-### Abilitazione e Personalizzazione
+| Tipo | Comportamento |
+|---|---|
+| `VOLATILE` | Cache in memoria, persa a refresh o chiusura tab |
+| `SESSION` | Sopravvive al refresh ma non oltre la sessione |
+| `LOCAL` | Resta disponibile anche tra sessioni diverse |
 
-Per attivare e configurare il sistema nel proprio progetto, seguire questi due passaggi:
+### Perche` il file cache e` importante
 
-#### 1. Estensione della Configurazione
+Un buon `app-cache.config.ts` aiuta a:
 
-Creare una classe di configurazione (es. `WikiCacheConfig`) che estende `ConfigCache` di `asor-core`. Definire le proprie regole nell'array protetto `_pathsExtensions`.
+- ridurre richieste ripetute
+- velocizzare il caricamento di asset frequenti come le traduzioni
+- controllare l'invalidazione dopo operazioni di scrittura
+- evitare logiche cache improvvisate dentro i service
+
+### Esempio
 
 ```typescript
-// src/app/config/wiki.cache.config.ts
-import { ConfigCache, IPath, ConfigConst, AsorGlobalEnum } from '@asor-studio/asor-core';
-
 export class WikiCacheConfig extends ConfigCache {
+    public static override globalStateName = 'wiki';
 
-    // È obbligatorio per inizializzare le costanti della libreria asor-core
-    public static override globalStateName = 'wiki'; // Fondamentale per isolare il sistema di cache nel singolo microservizio Angular. In alternativa, mantenendo lo stesso nome in più microservizi, è possibile condividere la cache tra di essi.
-
-    protected static override _pathsExtensions: IPath[] = [
+    protected static override _pathsExtensions = [
         {
             persistenceType: AsorGlobalEnum.CacheType.SESSION,
             encriptType: AsorGlobalEnum.CacheEncriptType.AUTO,
             reqPayloadCache: false,
             resctrictRoute: ConfigConst.Route.NONE,
-            pathValue: '/api/v1/users', // Cacha le chiamate utenti
-            clearOn: ['/api/v1/users/save', '/api/v1/users/delete'] // Pulisce su salva/elimina
+            pathValue: '/api/v1/users',
+            clearOn: ['/api/v1/users/save', '/api/v1/users/delete']
         },
-        // ... altre regole
     ];
 
-    // è obbligatorio per inizializzare le costanti della libreria asor-core
     static {
         ConfigCache.SetConfiguration(WikiCacheConfig);
     }
 }
 ```
 
-#### 2. Registrazione dell'Interceptor
-
-Nel file di configurazione dell'app (`app.config.ts`), fornire il `CacheInterceptor` e inizializzare il servizio di configurazione.
-
-> **Nota**: È necessario passare la configurazione estesa al servizio di utilità, solitamente nell'interceptor stesso o nell'inizializzazione dell'app, oppure assicurarsi che le costanti puntino alla classe estesa se il design lo prevede. (In `asor-core` l'interceptor usa `CachePathUtility` che legge la configurazione globale).
-
-Registrazione in `app.config.ts`:
-
-```typescript
-// src/app/app.config.ts
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { CacheInterceptor } from '@asor-studio/asor-core'; // O dal percorso corretto della lib
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // ... altri provider
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: CacheInterceptor,
-      multi: true,
-    },
-  ]
-};
-```
-
 ---
 
 ## Sistema di Notifica di Errore <a id="structure-error"></a>
 
-Il sistema di gestione degli errori centralizzato permette ai componenti e alle molecole di reagire agli errori HTTP (es. 404, 500, 401) intercettati globalmente, senza dover gestire il `catchError` in ogni singola chiamata di servizio.
+Il sistema errori di ASOR permette di evitare `catchError` distribuiti in ogni servizio. L'idea e` centralizzare l'intercettazione e lasciare ai componenti solo la reazione.
 
-Il cuore del sistema è il `NotifyErrorService`, che agisce come un bus di eventi per gli errori.
+### Flusso
 
-### Funzionamento
+| Fase | Cosa accade |
+|---|---|
+| Intercettazione | `ErrorInterceptor` cattura l'errore HTTP |
+| Notifica | L'errore viene inoltrato a `NotifyErrorService` |
+| Reazione | I componenti registrati ricevono lo status e il payload errore |
 
-1.  **Intercettazione**: L'`ErrorInterceptor` cattura ogni errore HTTP.
-2.  **Notifica**: L'interceptor invia l'errore al `NotifyErrorService`.
-3.  **Reazione**: I componenti registrati al servizio ricevono la notifica ed eseguono la logica appropriata (es. mostrare un toast, redirect, alert).
+### Registrazione nei componenti
 
-### Abilitazione
+Per usare il sistema, il componente si registra di solito in `baseCompViewEnter()` usando un identificatore unico, in genere il proprio `className`.
 
-Per abilitare il sistema, è necessario registrare l'`ErrorInterceptor` nel file di configurazione dell'app (`app.config.ts`), similmente al sistema di cache.
+| Punto chiave | Motivo |
+|---|---|
+| ID univoco | Evita sottoscrizioni duplicate |
+| Registrazione nel lifecycle | Tiene il componente allineato alla sua presenza reale in pagina |
+| Gestione centralizzata | Riduce boilerplate nei service |
 
-```typescript
-// src/app/app.config.ts
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorInterceptor } from '@asor-studio/asor-core';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    // ...
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
-      multi: true,
-    },
-  ]
-};
-```
-
-### Utilizzo nei Componenti (`NotifyErrorService`)
-
-Per gestire gli errori in un componente o molecola, iniettare `NotifyErrorService` e usare il metodo `registry`.
-
-> **Importante**: Il metodo `registry` accetta come primo argomento un identificativo univoco (solitamente il nome della classe). Questo garantisce che ci sia una sola sottoscrizione attiva per componente, prevenendo memory leaks (la sottoscrizione precedente con lo stesso ID viene cancellata automaticamente).
+Esempio:
 
 ```typescript
-import { BaseComponent, NotifyErrorService, IHttpStatusCode, IHttpResponseError } from '@asor-studio/asor-core';
-
-@Component({ ... })
-export class MyComponent extends BaseComponent {
-    private notifyErrorService = inject(NotifyErrorService);
-
-    override baseCompViewEnter() {
-        // Registrazione alla ricezione degli errori
-        this.notifyErrorService.registry(
-            this.constructor.className, // ID Univoco (Nome Classe)
-            (status: HttpStatusCode, error: IHttpResponseError) => {
-                this.handleError(status, error);
-            }
-        );
+this.notifyErrorService.registry(
+    this.constructor.className,
+    (status, error) => {
+        this.handleError(status, error);
     }
-    
-    override baseCompViewLeave() {
-         // Logica di cleanup se necessaria
-    }
-
-    private handleError(status: HttpStatusCode, error: IHttpResponseError) {
-        switch (status) {
-            case IHttpStatusCode.NotFound: // 404
-                console.error('Risorsa non trovata');
-                break;
-            case IHttpStatusCode.InternalServerError: // 500
-                alert('Errore del server: ' + error.message);
-                break;
-            default:
-                console.log('Altro errore:', status);
-        }
-    }
-}
+);
 ```

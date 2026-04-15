@@ -52,7 +52,7 @@ I materiali in questa wiki hanno finalità puramente informative e didattiche. B
 
 La libreria è stata ideata e sviluppata da **robrosc**.
 
-- 🏢 **Organizzazione**: [--> ASOR Studio <--](https://github.com/asor-studio)
+- 🏢 **Namespaces**: [--> ASOR Studio <--](https://github.com/asor-studio)
 - ✉️ **Email**: [--> asorstudio.contact@gmail.com <--](mailto:asorstudio.contact@gmail.com)
 
 ### Hai bisogno di assistenza?
